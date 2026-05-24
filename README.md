@@ -1,36 +1,62 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Wirapath Frontend 🚀
 
-## Getting Started
+Wirapath is a platform designed to help career seekers assess their readiness, discover skill gaps, and understand market demands. This repository contains the Frontend application built with **Next.js 14**, **React**, and **Tailwind CSS**.
 
-First, run the development server:
+## 🛠 Tech Stack
 
+- **Framework**: Next.js (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **Icons**: Lucide React
+- **Package Manager**: pnpm
+
+## ⚙️ Prerequisites
+
+Before you begin, ensure you have the following installed:
+- [Node.js](https://nodejs.org/en/) (v18 or higher recommended)
+- [pnpm](https://pnpm.io/installation) package manager
+
+## 🚀 How to Run Locally
+
+Follow these steps to run the frontend application on your local machine:
+
+### 1. Clone the repository
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/ubaydillah1/hi-fi-website.git
+cd wirapath-fe
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Install dependencies
+It is highly recommended to use `pnpm` for this project:
+```bash
+pnpm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 3. Configure Environment Variables
+Create a `.env` file in the root of the project by copying the example:
+```bash
+cp .env.example .env
+```
+Ensure the following variable is correctly pointing to your local backend server:
+```env
+NEXT_PUBLIC_API_URL=http://localhost:5000
+NEXT_PUBLIC_AI_API_URL=http://127.0.0.1:5000
+```
+*(Note: Make sure the `wirapath-be` backend is also running concurrently so the APIs work correctly).*
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 4. Start the development server
+```bash
+pnpm dev
+```
 
-## Learn More
+### 5. Open in Browser
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the application.
 
-To learn more about Next.js, take a look at the following resources:
+## 📂 Project Structure
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `/app`: Next.js App Router pages and layouts (Dashboard, Onboarding, Profile).
+- `/components`: Reusable UI components.
+- `/lib`: Utility functions, API request helpers, and React Contexts (e.g., AuthContext).
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🔗 Backend Repository
+To use the full functionality of the application (like Dashboard summaries, skill gap, and auth), please ensure you also clone and run the backend repository (`wirapath-be`).
