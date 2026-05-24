@@ -13,7 +13,7 @@ export default function Step5({
   onNext: () => void;
   onBack: () => void;
 }) {
-  const { user, uploadDocuments } = useAuth();
+  const { user, uploadTranscript } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -61,11 +61,12 @@ export default function Step5({
 
     setIsSubmitting(true);
     try {
-      await uploadDocuments(null, selectedFile);
+      await uploadTranscript(selectedFile);
       toast.success("Transcript uploaded successfully!");
       onNext();
-    } catch (e: any) {
-      toast.error(e.message || "Failed to upload transcript. Please try again.");
+    } catch (e) {
+      const errorMessage = e instanceof Error ? e.message : "Failed to upload transcript. Please try again.";
+      toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
     }

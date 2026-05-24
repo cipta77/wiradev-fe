@@ -24,10 +24,12 @@ export interface User {
   graduation_year: number | null;
   avatar_url: string | null;
   achievement_goal: AchievementGoal | null;
+  target_role: string | null;
   cv_url: string | null;
   transcript_url: string | null;
   onboarding_completed: boolean;
   is_email_verified: boolean;
+  github_connected: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -47,11 +49,9 @@ interface AuthContextType {
     field_of_study: string;
     graduation_year: number;
   }) => Promise<User>;
-  updateGoal: (goal: AchievementGoal) => Promise<User>;
-  uploadDocuments: (
-    cv?: File | null,
-    transcript?: File | null,
-  ) => Promise<User>;
+  updateRole: (role: string) => Promise<User>;
+  uploadCv: (cv: File) => Promise<User>;
+  uploadTranscript: (transcript: File) => Promise<User>;
   completeOnboarding: (githubId?: string) => Promise<User>;
   refreshProfile: () => Promise<void>;
   updateAccountSettings: (data: {
@@ -91,7 +91,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   useEffect(() => {
-    loadProfile();
+    const timer = setTimeout(() => {
+      loadProfile();
+    }, 0);
+    return () => clearTimeout(timer);
   }, []);
 
   const refreshProfile = async () => {
@@ -208,29 +211,38 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     return res.result;
   };
 
-  const updateGoal = async (goal: AchievementGoal) => {
+  const updateRole = async (role: string) => {
     if (!user) throw new Error("Unauthorized");
     const res: { result: User } = await apiClient.patch(
-      `/api/users/${user.id}/onboarding/goal`,
+      `/api/users/${user.id}/onboarding/role`,
       {
-        achievement_goal: goal,
+        target_role: role,
       },
     );
     setUser(res.result);
     return res.result;
   };
 
-  const uploadDocuments = async (
-    cv?: File | null,
-    transcript?: File | null,
-  ) => {
+  const uploadCv = async (cv: File) => {
     if (!user) throw new Error("Unauthorized");
     const formData = new FormData();
-    if (cv) formData.append("cv", cv);
-    if (transcript) formData.append("transcript", transcript);
+    formData.append("cv", cv);
 
     const res: { result: User } = await apiClient.patch(
-      `/api/users/${user.id}/onboarding/documents`,
+      `/api/users/${user.id}/onboarding/cv`,
+      formData,
+    );
+    setUser(res.result);
+    return res.result;
+  };
+
+  const uploadTranscript = async (transcript: File) => {
+    if (!user) throw new Error("Unauthorized");
+    const formData = new FormData();
+    formData.append("transcript", transcript);
+
+    const res: { result: User } = await apiClient.patch(
+      `/api/users/${user.id}/onboarding/transcript`,
       formData,
     );
     setUser(res.result);
@@ -291,8 +303,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         register,
         logout,
         updateProfile,
-        updateGoal,
-        uploadDocuments,
+        updateRole,
+        uploadCv,
+        uploadTranscript,
         completeOnboarding,
         refreshProfile,
         updateAccountSettings,

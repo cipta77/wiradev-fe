@@ -5,7 +5,6 @@ import { ProfileBanner } from "./_components/ProfileBanner";
 import { SkillDetails } from "./_components/SkillDetails";
 import { IntegrationsCard } from "./_components/IntegrationsCard";
 import { DocumentsCard } from "./_components/DocumentsCard";
-import { AchievementsCard } from "./_components/AchievementsCard";
 
 export default function ProfilePage() {
   return (
@@ -23,8 +22,6 @@ export default function ProfilePage() {
             <DocumentsCard />
           </div>
         </div>
-
-        <AchievementsCard />
       </div>
     </div>
   );

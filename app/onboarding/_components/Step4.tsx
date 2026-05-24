@@ -20,7 +20,7 @@ export default function Step4({
   onNext: () => void;
   onBack: () => void;
 }) {
-  const { user, uploadDocuments } = useAuth();
+  const { user, uploadCv } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -68,11 +68,12 @@ export default function Step4({
 
     setIsSubmitting(true);
     try {
-      await uploadDocuments(selectedFile, null);
+      await uploadCv(selectedFile);
       toast.success("CV uploaded successfully!");
       onNext();
-    } catch (e: any) {
-      toast.error(e.message || "Failed to upload CV. Please try again.");
+    } catch (e) {
+      const errorMessage = e instanceof Error ? e.message : "Failed to upload CV. Please try again.";
+      toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
     }

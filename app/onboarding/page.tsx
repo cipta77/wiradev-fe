@@ -9,40 +9,13 @@ import Step3 from "./_components/Step3";
 import Step4 from "./_components/Step4";
 import Step5 from "./_components/Step5";
 import Step6 from "./_components/Step6";
-import { submitOnboarding } from "@/lib/api";
-
-export type OnboardingData = {
-  firstName: string;
-  lastName: string;
-  university: string;
-  fieldOfStudy: string;
-  graduationYear: string;
-  goals: string[];
-};
 
 export default function OnboardingPage() {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const [formData, setFormData] = useState<OnboardingData>({
-    firstName: "",
-    lastName: "",
-    university: "",
-    fieldOfStudy: "",
-    graduationYear: "",
-    goals: [],
-  });
 
   const totalSteps = 6;
   const progressPercent = (currentStep / totalSteps) * 100;
-
-  const updateFormData = (data: Partial<OnboardingData>) => {
-    setFormData((prev) => ({
-      ...prev,
-      ...data,
-    }));
-  };
 
   const nextStep = () => {
     if (currentStep < totalSteps) setCurrentStep(currentStep + 1);
@@ -52,57 +25,8 @@ export default function OnboardingPage() {
     if (currentStep > 1) setCurrentStep(currentStep - 1);
   };
 
-  const runSkipOnboardingLogic = () => {
-    const skipButton = Array.from(document.querySelectorAll("button")).find(
-      (button) => button.textContent?.trim().toLowerCase() === "skip onboarding"
-    ) as HTMLButtonElement | undefined;
-
-    if (skipButton) {
-      skipButton.click();
-      return;
-    }
-
+  const finishOnboarding = () => {
     router.push("/dashboard");
-  };
-
-  const finishOnboarding = async () => {
-    if (isSubmitting) return;
-
-    setIsSubmitting(true);
-
-    const payload = {
-      email: `demo-${Date.now()}@wirapath.local`,
-      firstName: formData.firstName || "Alex",
-      lastName: formData.lastName || "Rahman",
-      university: formData.university || "Universitas Contoh",
-      fieldOfStudy: formData.fieldOfStudy || "Informatika",
-      graduationYear: formData.graduationYear || "2026",
-      goals: formData.goals || [],
-      cvFileName: "skipped-cv.pdf",
-      transcriptFileName: "skipped-transcript.pdf",
-    };
-
-    try {
-      localStorage.setItem("wirapath_onboarding_data", JSON.stringify(payload));
-      localStorage.setItem("wirapath_onboarding_completed", "true");
-
-      await Promise.race([
-        submitOnboarding(payload),
-        new Promise((resolve) => setTimeout(resolve, 1500)),
-      ]);
-    } catch (error) {
-      console.error("Onboarding API warning:", error);
-    } finally {
-      setIsSubmitting(false);
-
-      /**
-       * Penting:
-       * Tombol Skip Onboarding di Sidebar sudah terbukti bisa membuka dashboard.
-       * Jadi setelah Finish Setup, kita jalankan logic Skip yang sama supaya
-       * flag onboarding selesai ikut tersimpan sesuai sistem asli project.
-       */
-      runSkipOnboardingLogic();
-    }
   };
 
   return (
@@ -128,8 +52,6 @@ export default function OnboardingPage() {
 
           {currentStep === 2 && (
             <Step2
-              data={formData}
-              onChange={updateFormData}
               onNext={nextStep}
               onBack={prevStep}
             />
@@ -137,8 +59,6 @@ export default function OnboardingPage() {
 
           {currentStep === 3 && (
             <Step3
-              selectedGoals={formData.goals}
-              onChange={(goals) => updateFormData({ goals })}
               onNext={nextStep}
               onBack={prevStep}
             />
@@ -152,7 +72,6 @@ export default function OnboardingPage() {
             <Step6
               onFinish={finishOnboarding}
               onBack={prevStep}
-              isSubmitting={isSubmitting}
             />
           )}
         </div>

@@ -4,6 +4,7 @@ const API_BASE_URL =
 async function requestApi(path: string, options?: RequestInit) {
   const response = await fetch(`${API_BASE_URL}${path}`, {
     ...options,
+    credentials: "include",
     headers: {
       "Content-Type": "application/json",
       ...(options?.headers || {}),
@@ -94,7 +95,8 @@ export type OnboardingPayload = {
 };
 
 export async function getDashboardSummary(): Promise<DashboardSummary> {
-  const data = await requestApi("/api/dashboard/summary");
+  const responseData = await requestApi("/api/dashboard/summary");
+  const data = responseData?.result || responseData;
 
   const user = data?.user || data?.profile || data?.account || data || {};
   const readiness = data?.readiness || data?.readinessSummary || data || {};
@@ -129,7 +131,8 @@ export async function getDashboardSummary(): Promise<DashboardSummary> {
 }
 
 export async function getSkillGap() {
-  const data = await requestApi("/api/readiness/skill-gap");
+  const responseData = await requestApi("/api/readiness/skill-gap");
+  const data = responseData?.result || responseData;
 
   const list: SkillGapApiItem[] = Array.isArray(data)
     ? data
@@ -145,7 +148,8 @@ export async function getSkillGap() {
 }
 
 export async function getMarketDemand() {
-  const data = await requestApi("/api/readiness/market-demand");
+  const responseData = await requestApi("/api/readiness/market-demand");
+  const data = responseData?.result || responseData;
 
   const list: MarketDemandApiItem[] = Array.isArray(data)
     ? data
