@@ -1,6 +1,8 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
+import { getSkillGap } from "@/lib/api";
 
 interface SkillGapItem {
   skill: string;
@@ -10,7 +12,7 @@ interface SkillGapItem {
   priority: "Critical" | "High" | "Medium";
 }
 
-const skillGaps: SkillGapItem[] = [
+const fallbackSkillGaps: SkillGapItem[] = [
   {
     skill: "System Design",
     current: 28,
@@ -117,6 +119,20 @@ const SkillGapRow = ({ item }: { item: SkillGapItem }) => (
 );
 
 export const SkillGap = () => {
+  const [skillGaps, setSkillGaps] = useState<SkillGapItem[]>(fallbackSkillGaps);
+
+  useEffect(() => {
+    getSkillGap()
+      .then((data) => {
+        if (data.length > 0) {
+          setSkillGaps(data);
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to load skill gap:", error);
+      });
+  }, []);
+
   return (
     <div
       className="bg-white p-5 md:p-7 rounded-[20px] border border-[#E8ECF0]"

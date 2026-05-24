@@ -1,6 +1,8 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { TrendingUp } from "lucide-react";
+import { getMarketDemand } from "@/lib/api";
 
 interface MarketDemandItem {
   rank: number;
@@ -10,7 +12,7 @@ interface MarketDemandItem {
   barWidth: number;
 }
 
-const marketDemands: MarketDemandItem[] = [
+const fallbackMarketDemands: MarketDemandItem[] = [
   {
     rank: 1,
     skill: "React/Next.js",
@@ -80,6 +82,21 @@ const MarketDemandRow = ({ item }: { item: MarketDemandItem }) => (
 );
 
 export const MarketDemand = () => {
+  const [marketDemands, setMarketDemands] =
+    useState<MarketDemandItem[]>(fallbackMarketDemands);
+
+  useEffect(() => {
+    getMarketDemand()
+      .then((data) => {
+        if (data.length > 0) {
+          setMarketDemands(data);
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to load market demand:", error);
+      });
+  }, []);
+
   return (
     <div
       className="bg-white p-5 md:p-7 rounded-[20px] border border-[#E8ECF0]"

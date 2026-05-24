@@ -1,0 +1,70 @@
+"use client";
+
+import { Button } from "@/components/ui/button";
+import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import { GithubIcon } from "@/components/icons/GithubIcon";
+
+export default function Step6({
+  onFinish: _onFinish,
+  onBack,
+  isSubmitting = false,
+}: {
+  onFinish: () => void;
+  onBack: () => void;
+  isSubmitting?: boolean;
+}) {
+  return (
+    <div className="flex flex-col items-center justify-center w-full animate-in fade-in duration-500 max-w-[720px] mx-auto py-4 px-4 sm:px-0">
+      <div className="w-16 h-16 md:w-20 md:h-20 lg:w-[88px] lg:h-[88px] bg-[#1A1A1D] rounded-full flex items-center justify-center mb-6 md:mb-8 shadow-lg shadow-black/10">
+        <GithubIcon className="w-8 h-8 md:w-10 md:h-10 text-white" />
+      </div>
+
+      <div className="text-center mb-8 md:mb-10 max-w-[620px]">
+        <h2 className="text-[24px] sm:text-[28px] md:text-[32px] font-extrabold text-[#0D3E9B] mb-3 md:mb-4 tracking-tight leading-tight">
+          Connect Your GitHub
+        </h2>
+        <p className="text-[14px] md:text-[15px] text-slate-400 leading-relaxed md:leading-[1.8] opacity-80 px-2 md:px-4">
+          Let&apos;s see what you&apos;ve built. Connecting GitHub helps us
+          analyze your repositories, coding patterns, and suggest personalized
+          development projects.
+        </p>
+      </div>
+
+      <div className="w-full max-w-[400px] mb-4 md:mb-6">
+        <Button className="w-full h-14 md:h-16 bg-[#1A1A1D] hover:bg-[#2A2A2D] rounded-[16px] md:rounded-[20px] text-[15px] md:text-[16px] font-bold text-white shadow-xl shadow-black/10 transition-all active:scale-[0.98] flex items-center justify-center gap-3 md:gap-4">
+          <GithubIcon className="w-5 h-5 md:w-6 md:h-6" />
+          Connect GitHub Account
+        </Button>
+      </div>
+
+      <p className="text-[12px] md:text-[13px] text-[#94A3B8] mb-10 md:mb-16 opacity-70 text-center">
+        We only read public repository data. Your code stays yours.
+      </p>
+
+      <div className="flex items-center gap-3 mt-auto w-full">
+        <button
+          type="button"
+          onClick={onBack}
+          className="h-14 w-14 flex items-center justify-center rounded-[20px] bg-slate-50 text-slate-400 hover:bg-slate-100 hover:text-gray-900 transition-all active:scale-95 sm:w-auto sm:px-6 sm:gap-2 sm:bg-transparent sm:hover:bg-transparent sm:h-auto"
+        >
+          <ChevronLeftIcon className="w-5 h-5" />
+          <span className="hidden sm:inline text-[15px] font-semibold">Back</span>
+        </button>
+        <div className="hidden sm:block grow" />
+        <a
+          href="/dashboard"
+          onClick={() => {
+            try {
+              localStorage.setItem("wirapath_onboarding_completed", "true");
+            } catch {}
+          }}
+          aria-disabled={isSubmitting}
+          className="grow sm:grow-0 h-14 px-12 bg-linear-to-r from-[#066EFF] to-[#0556cc] hover:from-[#0556cc] hover:to-[#044bb3] rounded-[20px] text-[15px] font-bold text-white shadow-lg shadow-blue-500/25 gap-3 group transition-all active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center"
+        >
+          Finish Setup
+          <ChevronRightIcon className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+        </a>
+      </div>
+    </div>
+  );
+}
