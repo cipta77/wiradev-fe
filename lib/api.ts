@@ -182,3 +182,169 @@ export async function submitOnboarding(payload: OnboardingPayload) {
     }),
   });
 }
+
+// Assessment API integrations using unified requestApi utility
+export async function getAssessmentCategories() {
+  return requestApi("/api/assessment/categories");
+}
+
+export async function getAssessmentQuestions() {
+  return requestApi("/api/assessment/questions");
+}
+
+export async function submitAssessmentResult(answers: { question_id: string; user_answer: string }[], timeTaken: number) {
+  return requestApi("/api/assessment/submit", {
+    method: "POST",
+    body: JSON.stringify({
+      answers,
+      time_taken_seconds: timeTaken,
+    }),
+  });
+}
+
+export async function getAssessmentResultData(id: string) {
+  return requestApi(`/api/assessment/result/${id}`);
+}
+
+export type AssessmentAnalyticsCategory = {
+  slug: string;
+  name: string;
+  icon: string;
+  color: string;
+  score: number;
+  correct: number;
+  total: number;
+  required: number;
+  gap: number;
+  status: "strong" | "moderate" | "gap";
+};
+
+export type AssessmentAnalytics = {
+  has_assessment: boolean;
+  assessment_id?: string;
+  completed_at?: string;
+  overall_score?: number;
+  total_questions?: number;
+  correct_answers?: number;
+  categories?: AssessmentAnalyticsCategory[];
+  strengths_count?: number;
+  critical_gaps_count?: number;
+  skills_mapped?: number;
+};
+
+export async function getAssessmentAnalytics(): Promise<AssessmentAnalytics> {
+  const responseData = await requestApi("/api/assessment/analytics");
+  return responseData?.result ?? responseData;
+}
+
+// CV Screening API types and methods
+export interface CvScreeningResult {
+  id: string;
+  user_id: string;
+  file_name: string;
+  file_url: string;
+  overall_score: number;
+  contact_score: number;
+  summary_score: number;
+  skills_score: number;
+  experience_score: number;
+  projects_score: number;
+  education_score: number;
+  ats_score: number;
+  keywords_found: string[];
+  keywords_missing: string[];
+  ai_summary: string;
+  recommendations: string[];
+  created_at: string;
+}
+
+export async function uploadCvScreening(file: File): Promise<CvScreeningResult> {
+  const formData = new FormData();
+  formData.append("cv", file);
+
+  const response = await fetch(`${API_BASE_URL}/api/cv-screening/upload`, {
+    method: "POST",
+    body: formData,
+    credentials: "include",
+  });
+
+  const data = await response.json().catch(() => null);
+  if (!response.ok) {
+    throw new Error(data?.message || data?.error || "CV screening failed");
+  }
+
+  return data?.result ?? data;
+}
+
+export async function getCvScreeningHistory(): Promise<CvScreeningResult[]> {
+  const responseData = await requestApi("/api/cv-screening/history");
+  return responseData?.result ?? responseData ?? [];
+}
+
+export async function getCvScreeningById(id: string): Promise<CvScreeningResult> {
+  const responseData = await requestApi(`/api/cv-screening/${id}`);
+  return responseData?.result ?? responseData;
+}
+
+export async function deleteCvScreening(id: string): Promise<void> {
+  await requestApi(`/api/cv-screening/${id}`, {
+    method: "DELETE",
+  });
+}
+
+// Career Simulation API methods
+export interface SimulationResultReport {
+  is_passed: boolean;
+  score: number;
+  feedback: string;
+  negotiated_salary?: string;
+}
+
+export interface SimulationSession {
+  id: string;
+  user_id: string;
+  type: "recruiter" | "salary";
+  company_name: string | null;
+  status: "ongoing" | "completed";
+  current_question_index: number;
+  created_at: string;
+}
+
+export interface SimulationMessage {
+  id: string;
+  simulation_id: string;
+  sender: "bot" | "user";
+  text: string;
+  created_at: string;
+}
+
+export async function startSimulation(
+  type: "recruiter" | "salary",
+  companyName?: string
+): Promise<{ simulation: SimulationSession; firstMessage: SimulationMessage }> {
+  const responseData = await requestApi("/api/simulations/start", {
+    method: "POST",
+    body: JSON.stringify({ type, company_name: companyName }),
+  });
+  return responseData?.result ?? responseData;
+}
+
+export async function sendSimulationMessage(
+  id: string,
+  text: string
+): Promise<{ botMessage?: SimulationMessage; result?: SimulationResultReport }> {
+  const responseData = await requestApi(`/api/simulations/${id}/message`, {
+    method: "POST",
+    body: JSON.stringify({ text }),
+  });
+  return responseData?.result ?? responseData;
+}
+
+export async function getSimulationDetails(
+  id: string
+): Promise<{ simulation: SimulationSession; messages: SimulationMessage[]; result?: SimulationResultReport }> {
+  const responseData = await requestApi(`/api/simulations/${id}`);
+  return responseData?.result ?? responseData;
+}
+
+

@@ -1,11 +1,18 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Mail, MapPin, GraduationCap } from "lucide-react";
-import { useAuth } from "@/lib/auth-context";
+import { useAuth, User } from "@/lib/auth-context";
+import { getAssessmentAnalytics } from "@/lib/api";
 
 export const ProfileBanner = () => {
   const { user } = useAuth();
+  const [stats, setStats] = useState({
+    readiness: "0%",
+    skills: "0",
+    gaps: "0",
+    strengths: "0"
+  });
 
   const name = user 
     ? (user.first_name || user.last_name 
@@ -16,7 +23,7 @@ export const ProfileBanner = () => {
   const email = user?.email || "No email provided";
   const university = user?.university || "Not specified";
 
-  const getInitials = (currentUser: any) => {
+  const getInitials = (currentUser: User | null) => {
     if (!currentUser) return "U";
     if (currentUser.first_name || currentUser.last_name) {
       const first = currentUser.first_name?.[0] || "";
@@ -27,6 +34,50 @@ export const ProfileBanner = () => {
   };
 
   const initials = getInitials(user);
+
+  useEffect(() => {
+    let active = true;
+    const loadStats = async () => {
+      try {
+        const data = await getAssessmentAnalytics();
+        if (active) {
+          if (data && data.has_assessment) {
+            setStats({
+              readiness: `${Math.round(data.overall_score ?? 0)}%`,
+              skills: `${data.skills_mapped ?? 0}`,
+              gaps: `${data.critical_gaps_count ?? 0}`,
+              strengths: `${data.strengths_count ?? 0}`
+            });
+          } else {
+            setStats({
+              readiness: "0%",
+              skills: "0",
+              gaps: "0",
+              strengths: "0"
+            });
+          }
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    const timer = setTimeout(() => {
+      loadStats();
+    }, 0);
+
+    return () => {
+      active = false;
+      clearTimeout(timer);
+    };
+  }, []);
+
+  const statsItems = [
+    { label: "Overall Readiness", value: stats.readiness },
+    { label: "Skills Mapped", value: stats.skills },
+    { label: "Critical Gaps", value: stats.gaps },
+    { label: "Strengths", value: stats.strengths },
+  ];
 
   return (
     <div
@@ -62,20 +113,16 @@ export const ProfileBanner = () => {
       </div>
 
       {/* Stats Section */}
-      <div className="flex items-center gap-2 md:gap-3 z-10 justify-center w-full lg:w-auto">
-        {[
-          { label: "Readiness", value: "62%" },
-          { label: "Skills", value: "12" },
-          { label: "Badges", value: "6" },
-        ].map((stat) => (
+      <div className="flex flex-wrap items-center gap-2 md:gap-3 z-10 justify-center w-full lg:w-auto">
+        {statsItems.map((stat) => (
           <div 
             key={stat.label} 
-            className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-[20px] w-[75px] md:w-[85px] h-[75px] md:h-[85px] flex flex-col items-center justify-center gap-0.5 transition-all hover:bg-white/20 cursor-default group"
+            className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-[20px] px-3 md:px-4 h-[75px] md:h-[85px] flex flex-col items-center justify-center gap-0.5 transition-all hover:bg-white/20 cursor-default group"
           >
             <span className="text-[18px] md:text-[20px] font-bold group-hover:scale-105 transition-transform">
               {stat.value}
             </span>
-            <span className="text-[10px] md:text-[11px] text-white/70 font-medium opacity-80">
+            <span className="text-[10px] md:text-[11px] text-white/70 font-semibold opacity-90 text-center">
               {stat.label}
             </span>
           </div>

@@ -8,35 +8,40 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { AssessmentAnalytics } from "@/lib/api";
 
-const stats = [
-  {
-    icon: ShieldCheck,
-    value: "62%",
-    label: "Overall Readiness",
-    color: "bg-[#F0F7FF] text-[#066EFF]",
-  },
-  {
-    icon: BarChart3,
-    value: "12",
-    label: "Skills Mapped",
-    color: "bg-[#F0FFF9] text-[#10B981]",
-  },
-  {
-    icon: AlertTriangle,
-    value: "4",
-    label: "Critical Gaps",
-    color: "bg-[#FFF1F1] text-[#EF4444]",
-  },
-  {
-    icon: CheckCircle2,
-    value: "5",
-    label: "Strengths",
-    color: "bg-[#F0FFF9] text-[#10B981]",
-  },
-];
+interface StatsCardsProps {
+  data?: AssessmentAnalytics;
+}
 
-export const StatsCards = () => {
+export const StatsCards = ({ data }: StatsCardsProps) => {
+  const stats = [
+    {
+      icon: ShieldCheck,
+      value: `${Math.round(data?.overall_score ?? 0)}%`,
+      label: "Overall Readiness",
+      color: "bg-[#F0F7FF] text-[#066EFF]",
+    },
+    {
+      icon: BarChart3,
+      value: `${data?.skills_mapped ?? 0}`,
+      label: "Skills Mapped",
+      color: "bg-[#F0FFF9] text-[#10B981]",
+    },
+    {
+      icon: AlertTriangle,
+      value: `${data?.critical_gaps_count ?? 0}`,
+      label: "Critical Gaps",
+      color: "bg-[#FFF1F1] text-[#EF4444]",
+    },
+    {
+      icon: CheckCircle2,
+      value: `${data?.strengths_count ?? 0}`,
+      label: "Strengths",
+      color: "bg-[#F0FFF9] text-[#10B981]",
+    },
+  ];
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
       {stats.map((stat, index) => (

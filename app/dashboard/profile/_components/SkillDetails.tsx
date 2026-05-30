@@ -3,72 +3,83 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { Sparkles, BrainCircuit, AlertCircle, RefreshCw } from "lucide-react";
+import { getAssessmentAnalytics } from "@/lib/api";
 
 interface Skill {
   skill: string;
-  confidence: number;
   confidence_pct: number;
 }
 
-interface PredictResponse {
-  status: string;
-  job_title: string;
-  threshold: number;
-  skills: Skill[];
-}
-
 const getBarColor = (pct: number) => {
-  if (pct >= 60) return "bg-emerald-500";
-  if (pct >= 35) return "bg-blue-500";
-  return "bg-orange-400";
+  if (pct >= 70) return "bg-[#10B981]";
+  if (pct >= 50) return "bg-[#F59E0B]";
+  return "bg-[#EF4444]";
 };
 
 const getTextColor = (pct: number) => {
-  if (pct >= 60) return "text-emerald-500";
-  if (pct >= 35) return "text-blue-500";
-  return "text-orange-400";
+  if (pct >= 70) return "text-[#10B981]";
+  if (pct >= 50) return "text-[#F59E0B]";
+  return "text-[#EF4444]";
 };
 
 export const SkillDetails = () => {
   const { user } = useAuth();
   const [skills, setSkills] = useState<Skill[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [lastFetchedRole, setLastFetchedRole] = useState<string | null>(null);
+  const [hasAssessment, setHasAssessment] = useState(false);
 
-  const doFetch = async (role: string) => {
+  const doFetch = async () => {
     setLoading(true);
     setError(null);
     try {
-      const aiApiUrl = process.env.NEXT_PUBLIC_AI_API_URL ?? "http://127.0.0.1:5000";
-      const res = await fetch(`${aiApiUrl}/predict`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ job_title: role, top_k: 10, threshold: 0.25 }),
-      });
-      if (!res.ok) throw new Error(`Server error: ${res.status}`);
-      const data: PredictResponse = await res.json();
-      setSkills(data.skills ?? []);
-      setLastFetchedRole(role);
+      const data = await getAssessmentAnalytics();
+      if (data && data.has_assessment && data.categories) {
+        setHasAssessment(true);
+        const mappedSkills = data.categories.map((c) => ({
+          skill: c.name,
+          confidence_pct: c.score,
+        }));
+        setSkills(mappedSkills);
+      } else {
+        setHasAssessment(false);
+        setSkills([]);
+      }
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to load skills");
     } finally {
       setLoading(false);
     }
   };
-
   useEffect(() => {
-    if (!user?.target_role || user.target_role === lastFetchedRole) return;
-    const role = user.target_role;
-    // Define and immediately invoke async fn inside effect — avoids setState-in-effect lint warning
-    const run = async () => {
-      await doFetch(role);
+    let ignore = false;
+    const fetchData = async () => {
+      try {
+        const data = await getAssessmentAnalytics();
+        if (ignore) return;
+        if (data && data.has_assessment && data.categories) {
+          setHasAssessment(true);
+          setSkills(data.categories.map((c) => ({
+            skill: c.name,
+            confidence_pct: c.score,
+          })));
+        } else {
+          setHasAssessment(false);
+          setSkills([]);
+        }
+      } catch (e) {
+        if (ignore) return;
+        setError(e instanceof Error ? e.message : "Failed to load skills");
+      } finally {
+        if (!ignore) setLoading(false);
+      }
     };
-    run();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.target_role]);
+    fetchData();
+    return () => { ignore = true; };
+  }, []);
 
-  const isEmpty = !loading && !error && skills.length === 0;
+
+  const isEmpty = !loading && !error && (!hasAssessment || skills.length === 0);
   const hasNoRole = !user?.target_role;
 
   return (
@@ -81,7 +92,7 @@ export const SkillDetails = () => {
           </div>
           <div>
             <h3 className="text-[17px] font-bold text-slate-800 leading-none">
-              Recommended Skills
+              Your Assessed Skills
             </h3>
             {user?.target_role && (
               <p className="text-[11px] text-slate-400 font-medium mt-0.5">
@@ -90,9 +101,9 @@ export const SkillDetails = () => {
             )}
           </div>
         </div>
-        {user?.target_role && !loading && (
+        {!loading && (
           <button
-            onClick={() => doFetch(user.target_role!)}
+            onClick={doFetch}
             className="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-blue-500 hover:bg-blue-50 transition-all"
             title="Refresh skills"
           >
@@ -114,7 +125,7 @@ export const SkillDetails = () => {
               ))}
             </div>
             <p className="text-[12px] text-slate-400 font-medium animate-pulse">
-              Analyzing skills for <span className="font-semibold">{user?.target_role}</span>…
+              Analyzing assessment data for <span className="font-semibold">{user?.target_role}</span>…
             </p>
           </div>
         )}
@@ -129,14 +140,12 @@ export const SkillDetails = () => {
               <p className="text-[13px] font-semibold text-slate-700">Failed to load skills</p>
               <p className="text-[11px] text-slate-400 mt-0.5">{error}</p>
             </div>
-            {user?.target_role && (
-              <button
-                onClick={() => doFetch(user.target_role!)}
-                className="text-[12px] font-semibold text-blue-500 hover:text-blue-600 transition-colors"
-              >
-                Try again
-              </button>
-            )}
+            <button
+              onClick={doFetch}
+              className="text-[12px] font-semibold text-blue-500 hover:text-blue-600 transition-colors"
+            >
+              Try again
+            </button>
           </div>
         )}
 
@@ -155,14 +164,16 @@ export const SkillDetails = () => {
 
         {/* Empty result */}
         {!loading && !error && !hasNoRole && isEmpty && (
-          <div className="flex flex-col items-center justify-center py-8 gap-2 text-center">
+          <div className="flex flex-col items-center justify-center py-8 gap-3 text-center">
             <div className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center">
               <Sparkles className="w-5 h-5 text-slate-300" />
             </div>
-            <p className="text-[13px] font-semibold text-slate-500">No skills found</p>
-            <p className="text-[11px] text-slate-400">
-              Try a different role or lower the confidence threshold.
-            </p>
+            <div>
+              <p className="text-[13px] font-semibold text-slate-500">No assessment completed yet</p>
+              <p className="text-[11px] text-slate-400 max-w-xs mx-auto mt-1 leading-relaxed">
+                Take the Initial Assessment in the Readiness Center to measure and view your core capabilities.
+              </p>
+            </div>
           </div>
         )}
 
@@ -172,11 +183,11 @@ export const SkillDetails = () => {
             {skills.map((skill) => (
               <div key={skill.skill} className="space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <span className="text-[13px] font-semibold text-slate-700 capitalize">
-                    {skill.skill.charAt(0) + skill.skill.slice(1).toLowerCase()}
+                  <span className="text-[13px] font-semibold text-slate-750 font-poppins">
+                    {skill.skill}
                   </span>
                   <span className={`text-[11px] font-bold ${getTextColor(skill.confidence_pct)}`}>
-                    {skill.confidence_pct.toFixed(1)}%
+                    {skill.confidence_pct}%
                   </span>
                 </div>
                 <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">

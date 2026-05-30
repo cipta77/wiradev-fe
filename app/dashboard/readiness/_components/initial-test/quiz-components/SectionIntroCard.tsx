@@ -2,14 +2,18 @@
 
 import React from "react";
 import { cn } from "@/lib/utils";
-import { Section } from "../quizData";
+import { AssessmentCategory } from "../quizData";
+import * as Icons from "lucide-react";
 
 interface SectionIntroCardProps {
-  section: Section;
+  section: AssessmentCategory;
 }
 
 export const SectionIntroCard = ({ section }: SectionIntroCardProps) => {
-  const Icon = section.icon;
+  // Safe dynamic lucide icon mapping with type safety, avoiding any
+  const iconKey = section.icon as keyof typeof Icons;
+  const IconComponent = (Icons[iconKey] as Icons.LucideIcon) || Icons.BookOpen;
+  const color = section.color || "blue";
   
   const colors: Record<string, string> = {
     blue: "text-blue-500 bg-blue-50",
@@ -35,29 +39,29 @@ export const SectionIntroCard = ({ section }: SectionIntroCardProps) => {
   return (
     <div className={cn(
       "bg-white rounded-[20px] border border-slate-100 p-5 mb-6 flex items-center justify-between border-t-4 shadow-sm shadow-slate-100/50",
-      borderColors[section.color] || "border-t-blue-500"
+      borderColors[color] || "border-t-blue-500"
     )}>
       <div className="flex items-center gap-4">
         <div className={cn(
           "w-11 h-11 rounded-xl flex items-center justify-center shrink-0",
-          colors[section.color] || "bg-blue-50 text-blue-500"
+          colors[color] || "bg-blue-50 text-blue-500"
         )}>
-          <Icon className="w-5 h-5" />
+          <IconComponent className="w-5 h-5" />
         </div>
         <div>
           <h3 className="text-[15px] font-semibold text-slate-900 font-poppins">
             {section.name}
           </h3>
-          <p className="text-[12px] text-slate-400 font-medium font-poppins mt-0.5">
+          <p className="text-[12px] text-slate-400 font-medium font-poppins mt-0.5 animate-pulse">
             {section.description}
           </p>
         </div>
       </div>
       <div className={cn(
         "px-3 py-1 rounded-full text-[11px] font-semibold font-poppins border",
-        tagColors[section.color]
+        tagColors[color]
       )}>
-        {section.tasks.length} tasks
+        {section.questions?.length || 0} tasks
       </div>
     </div>
   );

@@ -1,16 +1,16 @@
-"use client";
-
 import React from "react";
 import { cn } from "@/lib/utils";
-import { Section } from "../quizData";
+import { AssessmentCategory } from "../quizData";
+import { Check } from "lucide-react";
 
 interface SectionTabsProps {
-  sections: Section[];
+  sections: AssessmentCategory[];
   activeSectionId: string;
   onTabClick?: (index: number) => void;
+  answers?: Record<string, string>;
 }
 
-export const SectionTabs = ({ sections, activeSectionId, onTabClick }: SectionTabsProps) => {
+export const SectionTabs = ({ sections, activeSectionId, onTabClick, answers = {} }: SectionTabsProps) => {
   const activeColors: Record<string, string> = {
     blue: "border-blue-500 ring-blue-500/10 text-[#066EFF]",
     purple: "border-[#A855F7] ring-purple-500/10 text-[#A855F7]",
@@ -25,33 +25,54 @@ export const SectionTabs = ({ sections, activeSectionId, onTabClick }: SectionTa
     orange: "bg-orange-500",
   };
 
+  const isSectionComplete = (section: AssessmentCategory) => {
+    if (!section.questions || section.questions.length === 0) return false;
+    return section.questions.every((q) => answers[q.id] !== undefined);
+  };
+
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 md:gap-2.5 mb-6">
       {sections.map((section, idx) => {
         const isActive = section.id === activeSectionId;
+        const isComplete = isSectionComplete(section);
+        const color = section.color || "blue";
         return (
           <button
             key={section.id}
             onClick={() => onTabClick?.(idx)}
             className={cn(
-              "flex items-center gap-3 px-4 py-3 rounded-[16px] border transition-all cursor-pointer text-left",
+              "flex items-center gap-2 px-3.5 py-2.5 rounded-[14px] border transition-all cursor-pointer text-left select-none",
               isActive
-                ? cn("bg-white shadow-sm ring-1", activeColors[section.color])
-                : "bg-white/50 border-slate-100 opacity-60 hover:opacity-100"
+                ? cn("bg-white shadow-sm ring-1", activeColors[color])
+                : isComplete
+                  ? "bg-emerald-50/50 border-emerald-100 opacity-90 hover:opacity-100"
+                  : "bg-white/50 border-slate-100 opacity-60 hover:opacity-100"
             )}
           >
             <div
               className={cn(
-                "w-7 h-7 rounded-lg flex items-center justify-center text-[13px] font-semibold text-white shrink-0 transition-colors",
-                isActive ? activeBgs[section.color] : "bg-slate-300"
+                "w-6 h-6 rounded-lg flex items-center justify-center text-[11px] font-bold shrink-0 transition-all duration-300",
+                isActive 
+                  ? "text-white " + activeBgs[color] 
+                  : isComplete 
+                    ? "bg-emerald-500 text-white" 
+                    : "bg-slate-200 text-slate-500"
               )}
             >
-              {idx + 1}
+              {isComplete ? (
+                <Check className="w-3.5 h-3.5 stroke-[3]" />
+              ) : (
+                <span>{idx + 1}</span>
+              )}
             </div>
             <span
               className={cn(
-                "text-[13px] font-semibold font-poppins truncate transition-colors",
-                isActive ? activeColors[section.color].split(' ').pop() : "text-slate-400"
+                "text-[12px] font-semibold font-poppins truncate flex-1 transition-colors",
+                isActive 
+                  ? activeColors[color].split(' ').pop() 
+                  : isComplete 
+                    ? "text-emerald-700 font-medium" 
+                    : "text-slate-400 font-medium"
               )}
             >
               {section.name}

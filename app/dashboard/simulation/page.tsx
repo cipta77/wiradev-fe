@@ -62,7 +62,6 @@ export default function CareerSimulationPage() {
               <div className="lg:col-span-8 h-[480px] order-1 lg:order-2">
                 <ChatSimulation
                   type="salary"
-                  showSuggestions={false}
                   companyName=""
                 />
               </div>

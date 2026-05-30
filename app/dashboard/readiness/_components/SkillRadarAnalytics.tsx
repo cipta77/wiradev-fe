@@ -10,32 +10,58 @@ import {
   BarChart,
   Bar,
   XAxis,
-  YAxis,
   Tooltip,
   Cell,
 } from "recharts";
 import { Target, TrendingUp, BarChart3, Lightbulb } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const radarData = [
-  { subject: "JavaScript", A: 85, fullMark: 100 },
-  { subject: "React", A: 75, fullMark: 100 },
-  { subject: "Node.js", A: 60, fullMark: 100 },
-  { subject: "SQL", A: 70, fullMark: 100 },
-  { subject: "Testing", A: 45, fullMark: 100 },
-  { subject: "TypeScript", A: 65, fullMark: 100 },
-];
+import { AssessmentAnalyticsCategory } from "@/lib/api";
 
-const distributionData = [
-  { name: "JS", value: 85 },
-  { name: "TS", value: 65 },
-  { name: "React", value: 75 },
-  { name: "Test", value: 45 },
-  { name: "SQL", value: 70 },
-  { name: "DevOps", value: 40 },
-];
+interface SkillRadarAnalyticsProps {
+  categories?: AssessmentAnalyticsCategory[];
+  overallScore?: number;
+}
 
-export const SkillRadarAnalytics = () => {
+export const SkillRadarAnalytics = ({
+  categories = [],
+  overallScore = 0,
+}: SkillRadarAnalyticsProps) => {
+  // Format radar data
+  const radarData = categories.slice(0, 6).map((c) => ({
+    subject: c.name.split(" ")[0], // Keep name short for radar axes
+    A: c.score,
+    fullMark: 100,
+  }));
+
+  // Format distribution data
+  const distributionData = categories.slice(0, 6).map((c) => ({
+    name: c.slug.replace("cat-", "").substring(0, 3).toUpperCase(),
+    value: c.score,
+  }));
+
+  // Calculate matching target: how many categories are close to or exceed required scores
+  const metRequiredCount = categories.filter(
+    (c) => c.score >= c.required,
+  ).length;
+  const matchPercentage =
+    categories.length > 0
+      ? Math.round((metRequiredCount / categories.length) * 100)
+      : 0;
+
+  // Key focus areas to list
+  const topFocusSkills = categories.slice(0, 3).map((c) => {
+    let color = "bg-emerald-500";
+    if (c.status === "gap") color = "bg-rose-500";
+    else if (c.status === "moderate") color = "bg-amber-500";
+
+    return {
+      label: c.name,
+      value: c.score,
+      color,
+    };
+  });
+
   return (
     <div className="grid grid-cols-1 xl:grid-cols-12 gap-3 md:gap-4">
       {/* Skill Radar Card */}
@@ -45,17 +71,17 @@ export const SkillRadarAnalytics = () => {
             Skill Radar
           </h3>
           <p className="text-[11px] text-slate-400 font-medium">
-            Based on assessment & GitHub analysis
+            Based on active skills assessment
           </p>
         </div>
 
         <div className="flex-1 min-h-[220px] w-full flex items-center justify-center">
           <ResponsiveContainer width="100%" height="100%">
-            <RadarChart cx="50%" cy="50%" outerRadius="80%" data={radarData}>
+            <RadarChart cx="50%" cy="50%" outerRadius="75%" data={radarData}>
               <PolarGrid stroke="#E2E8F0" strokeDasharray="3 3" />
               <PolarAngleAxis
                 dataKey="subject"
-                tick={{ fill: "#64748B", fontSize: 11, fontWeight: 600 }}
+                tick={{ fill: "#64748B", fontSize: 10, fontWeight: 600 }}
               />
               <Radar
                 name="Skills"
@@ -83,7 +109,7 @@ export const SkillRadarAnalytics = () => {
                 Readiness Score
               </p>
               <h4 className="text-[20px] font-semibold text-slate-800 font-poppins">
-                62%
+                {Math.round(overallScore)}%
               </h4>
             </div>
           </div>
@@ -91,12 +117,12 @@ export const SkillRadarAnalytics = () => {
             <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
               <div
                 className="h-full bg-linear-to-r from-[#066EFF] to-[#4F46E5] rounded-full"
-                style={{ width: "62%" }}
+                style={{ width: `${overallScore}%` }}
               />
             </div>
             <p className="text-[11px] font-semibold text-emerald-500 flex items-center gap-1">
               <TrendingUp className="w-3.5 h-3.5" />
-              +8% from last month
+              Real-time core capability index
             </p>
           </div>
         </div>
@@ -109,27 +135,26 @@ export const SkillRadarAnalytics = () => {
             </div>
             <div className="space-y-0">
               <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wide">
-                Market Demand Match
+                Market Target Match
               </p>
               <h4 className="text-[20px] font-semibold text-slate-800 font-poppins">
-                68%
+                {matchPercentage}%
               </h4>
             </div>
           </div>
           <div className="space-y-4">
-            {[
-              { label: "React.js", value: 85, color: "bg-emerald-500" },
-              { label: "Testing", value: 45, color: "bg-emerald-500/40" },
-              { label: "TypeScript", value: 60, color: "bg-emerald-500/70" },
-            ].map((skill, idx) => (
+            {topFocusSkills.map((skill, idx) => (
               <div key={idx} className="space-y-1.5">
                 <div className="flex justify-between text-[10px] font-semibold text-slate-500">
-                  <span>{skill.label}</span>
+                  <span className="truncate max-w-[120px]">{skill.label}</span>
                   <span>{skill.value}%</span>
                 </div>
                 <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
                   <div
-                    className={cn("h-full rounded-full", skill.color)}
+                    className={cn(
+                      "h-full rounded-full animate-all duration-500",
+                      skill.color,
+                    )}
                     style={{ width: `${skill.value}%` }}
                   />
                 </div>
@@ -173,7 +198,7 @@ export const SkillRadarAnalytics = () => {
                     return null;
                   }}
                 />
-                <Bar dataKey="value" radius={[6, 6, 0, 0]} barSize={28}>
+                <Bar dataKey="value" radius={[6, 6, 0, 0]} barSize={24}>
                   {distributionData.map((entry, index) => (
                     <Cell
                       key={`cell-${index}`}
@@ -193,28 +218,29 @@ export const SkillRadarAnalytics = () => {
               <Lightbulb className="w-4.5 h-4.5 text-amber-500" />
             </div>
             <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wide">
-              Improvement Progress
+              Strengths & Gaps Status
             </p>
           </div>
           <div className="space-y-4">
             {[
               {
-                label: "Projects Done",
-                current: 3,
-                total: 5,
+                label: "Strong Skills",
+                current: categories.filter((c) => c.status === "strong").length,
+                total: categories.length,
                 color: "bg-[#066EFF]",
               },
               {
-                label: "Skills Improved",
-                current: 4,
-                total: 6,
-                color: "bg-emerald-500",
+                label: "Moderate Capabilities",
+                current: categories.filter((c) => c.status === "moderate")
+                  .length,
+                total: categories.length,
+                color: "bg-amber-500",
               },
               {
-                label: "Simulations",
-                current: 2,
-                total: 4,
-                color: "bg-amber-500",
+                label: "Improvement Gaps",
+                current: categories.filter((c) => c.status === "gap").length,
+                total: categories.length,
+                color: "bg-rose-500",
               },
             ].map((item, idx) => (
               <div key={idx} className="space-y-1.5">
@@ -230,7 +256,12 @@ export const SkillRadarAnalytics = () => {
                       "h-full rounded-full transition-all duration-1000",
                       item.color,
                     )}
-                    style={{ width: `${(item.current / item.total) * 100}%` }}
+                    style={{
+                      width:
+                        item.total > 0
+                          ? `${(item.current / item.total) * 100}%`
+                          : "0%",
+                    }}
                   />
                 </div>
               </div>

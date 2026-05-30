@@ -2,45 +2,32 @@
 
 import React from "react";
 import { cn } from "@/lib/utils";
+import { AssessmentAnalyticsCategory } from "@/lib/api";
 
-const skills = [
-  { name: "JavaScript", category: "Language", progress: 78 },
-  { name: "React", category: "Framework", progress: 65 },
-  { name: "Node.js", category: "Runtime", progress: 60 },
-  { name: "Python", category: "Language", progress: 52 },
-  { name: "SQL", category: "Database", progress: 70 },
-  { name: "TypeScript", category: "Language", progress: 45 },
-  { name: "System Design", category: "Architecture", progress: 28 },
-  { name: "Testing", category: "Quality", progress: 35 },
-  { name: "Docker", category: "DevOps", progress: 30 },
-  { name: "Git", category: "Tools", progress: 82 },
-];
-
-const getStatus = (progress: number) => {
-  if (progress >= 65) return "strong";
-  if (progress > 45) return "moderate";
-  return "gap";
-};
 
 const statusConfig = {
   strong: {
     color: "#10B981",
     bg: "bg-[#10B981]",
-    label: "Strong (>65%)",
+    label: "Strong (≥70%)",
   },
   moderate: {
     color: "#F59E0B",
     bg: "bg-[#F59E0B]",
-    label: "Moderate (45-65%)",
+    label: "Moderate (50-69%)",
   },
   gap: {
     color: "#EF4444",
     bg: "bg-[#EF4444]",
-    label: "Gap (<45%)",
+    label: "Gap (<50%)",
   },
 };
 
-export const SkillMap = () => {
+interface SkillMapProps {
+  categories?: AssessmentAnalyticsCategory[];
+}
+
+export const SkillMap = ({ categories = [] }: SkillMapProps) => {
   return (
     <div className="bg-white p-5 md:p-7 rounded-[20px] border border-[#E8ECF0]">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 px-1">
@@ -68,9 +55,9 @@ export const SkillMap = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 md:gap-3">
-        {skills.map((skill, index) => {
-          const status = getStatus(skill.progress);
-          const config = statusConfig[status];
+        {categories.map((skill, index) => {
+          const status = skill.status;
+          const config = statusConfig[status] || statusConfig.moderate;
 
           return (
             <div
@@ -97,7 +84,7 @@ export const SkillMap = () => {
                             : "text-[#EF4444]",
                       )}
                     >
-                      {skill.progress}%
+                      {skill.score}%
                     </span>
                   </div>
 
@@ -107,12 +94,12 @@ export const SkillMap = () => {
                         "h-full rounded-full transition-all duration-1000 ease-in-out",
                         config.bg,
                       )}
-                      style={{ width: `${skill.progress}%` }}
+                      style={{ width: `${skill.score}%` }}
                     />
                   </div>
 
-                  <p className="text-[10px] md:text-[11px] text-slate-400 font-medium truncate">
-                    {skill.category}
+                  <p className="text-[10px] md:text-[11px] text-slate-400 font-medium truncate uppercase tracking-wider">
+                    {skill.slug.replace("_", " ")}
                   </p>
                 </div>
               </div>
