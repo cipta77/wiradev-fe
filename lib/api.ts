@@ -347,4 +347,23 @@ export async function getSimulationDetails(
   return responseData?.result ?? responseData;
 }
 
+// Jobdesk Analyzer API integration
+export interface JobdeskAnalysisResult {
+  match_score: number;
+  matching_skills: string[];
+  missing_skills: string[];
+  recommendations: string[];
+  summary: string;
+}
+
+export async function analyzeJobDescription(
+  jobDescription: string
+): Promise<JobdeskAnalysisResult> {
+  const responseData = await requestApi("/api/jobdesk/analyze", {
+    method: "POST",
+    body: JSON.stringify({ job_description: jobDescription }),
+  });
+  return responseData?.result ?? responseData;
+}
+
 
