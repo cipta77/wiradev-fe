@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { Plus } from "lucide-react";
 
 export const DevHubHeader = () => {
   return (
@@ -11,14 +10,9 @@ export const DevHubHeader = () => {
           Development Hub
         </h1>
         <p className="text-[13px] md:text-[14px] text-slate-500 max-w-[600px] leading-relaxed font-medium">
-          Build real projects and get AI-powered code feedback
+          Rancang dan kembangkan proyek nyata untuk memperkuat portofolio Anda dengan ulasan instan dari AI.
         </p>
       </div>
-
-      <button className="flex items-center gap-1.5 bg-[#066EFF] text-white px-3.5 py-2 rounded-lg text-[12px] md:text-[13px] font-bold shadow-md shadow-blue-500/10 transition-all cursor-pointer">
-        <Plus className="w-3.5 h-3.5 shrink-0" />
-        <span className="whitespace-nowrap">New Project</span>
-      </button>
     </div>
   );
 };

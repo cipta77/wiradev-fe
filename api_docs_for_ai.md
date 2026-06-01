@@ -557,3 +557,132 @@ Retrieves market demand trends for various skills.
       ]
     }
     ```
+
+---
+
+## 🛠️ Mini Projects & AI Review Endpoints (`/api/mini-projects`)
+
+### 1. Get Mini Projects for User
+Retrieves all active mini projects mapped to the authenticated user's target role, along with their submission status and overall score if reviewed.
+
+- **Method**: `GET`
+- **Path**: `/api/mini-projects`
+- **Headers**: `Cookie: access_token=...`
+- **Responses**:
+  - **`200 OK`**: Projects retrieved successfully
+    ```json
+    {
+      "message": "Mini projects retrieved successfully",
+      "result": [
+        {
+          "id": "mp-fe-1",
+          "title": "Responsive Portfolio Landing Page",
+          "description": "Build a modern, mobile-first portfolio landing page...",
+          "brief": "Full markdown text brief...",
+          "level": "Beginner",
+          "duration": "2 hours",
+          "tag": "HTML/CSS",
+          "related_skills": ["HTML5", "CSS3", "Responsive Design"],
+          "evaluation_criteria": ["Mobile responsiveness", "Semantic HTML usage"],
+          "submission_status": "in_progress",
+          "submission_id": "78a1bc45-...",
+          "overall_score": null,
+          "submitted_at": null,
+          "reviewed_at": null
+        }
+      ]
+    }
+    ```
+
+### 2. Get Mini Project Detail
+Retrieves the details of a single mini project along with the user's detailed submission report (if any).
+
+- **Method**: `GET`
+- **Path**: `/api/mini-projects/:id`
+- **Headers**: `Cookie: access_token=...`
+- **Responses**:
+  - **`200 OK`**: Project detail and submission report
+    ```json
+    {
+      "message": "Mini project detail retrieved successfully",
+      "result": {
+        "project": {
+          "id": "mp-fe-1",
+          "title": "Responsive Portfolio Landing Page",
+          ...
+        },
+        "submission": {
+          "id": "78a1bc45-...",
+          "status": "reviewed",
+          "file_name": "landing_page.zip",
+          "overall_score": 85,
+          "strengths": ["Clean HTML semantic layout"],
+          "improvements": ["Needs CSS variables for colors"],
+          "objectives_met": [
+            { "title": "Mobile responsiveness", "status": "success" }
+          ],
+          "ai_summary": "Overall good job..."
+        }
+      }
+    }
+    ```
+
+### 3. Start Mini Project
+Initializes a new submission session for the selected project, setting the status to `in_progress`.
+
+- **Method**: `POST`
+- **Path**: `/api/mini-projects/:id/start`
+- **Headers**: `Cookie: access_token=...`
+- **Responses**:
+  - **`200 OK`**: Submission session initialized
+    ```json
+    {
+      "message": "Mini project started successfully",
+      "result": {
+        "id": "78a1bc45-...",
+        "user_id": "...",
+        "mini_project_id": "mp-fe-1",
+        "status": "in_progress"
+      }
+    }
+    ```
+
+### 4. Submit & Review Project (Multipart Upload)
+Uploads the project code archive (ZIP, RAR) or document (PDF, DOCX, PPTX), extracts its content, and performs a comprehensive AI evaluation.
+
+- **Method**: `POST`
+- **Path**: `/api/mini-projects/:id/submit`
+- **Headers**: `Cookie: access_token=...`
+- **Request Body (Multipart Form-Data)**:
+  - `file`: `File` (Required, ZIP/RAR/PDF/DOCX/PPTX up to 10MB)
+- **Responses**:
+  - **`200 OK`**: Project submitted and evaluated successfully by AI
+    ```json
+    {
+      "message": "Mini project submitted and reviewed successfully by AI",
+      "result": {
+        "id": "78a1bc45-...",
+        "status": "reviewed",
+        "file_name": "project_submission.zip",
+        "file_url": "uploads/file-17182903.zip",
+        "file_type": "zip",
+        "overall_score": 88,
+        "strengths": [
+          "Semantic layout conforms to standard conventions",
+          "Grid items wrap correctly on smaller layouts"
+        ],
+        "improvements": [
+          "Optimize loading times by compressing high-res assets"
+        ],
+        "objectives_met": [
+          { "title": "Mobile responsiveness", "status": "success" },
+          { "title": "Semantic HTML", "status": "success" },
+          { "title": "Asset optimization", "status": "warning" }
+        ],
+        "ai_summary": "The submission represents a very solid implementation of the responsive landing page, showing premium command of grid layout systems...",
+        "submitted_at": "2026-06-01T20:45:00.000Z",
+        "reviewed_at": "2026-06-01T20:45:15.000Z"
+      }
+    }
+    ```
+

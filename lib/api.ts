@@ -366,4 +366,99 @@ export async function analyzeJobDescription(
   return responseData?.result ?? responseData;
 }
 
+// Mini Projects API integration
+export interface MiniProject {
+  id: string;
+  title: string;
+  description: string;
+  brief: string;
+  level: "Beginner" | "Intermediate" | "Advanced";
+  duration: string;
+  tag: string;
+  related_skills: string[];
+  evaluation_criteria: string[];
+  sort_order: number;
+  is_active: boolean;
+  created_at: string;
+}
+
+export interface UserMiniProjectSubmission {
+  id: string;
+  user_id: string;
+  mini_project_id: string;
+  status: "not_started" | "in_progress" | "submitted" | "reviewed";
+  file_name: string | null;
+  file_url: string | null;
+  file_type: string | null;
+  overall_score: number | null;
+  strengths: string[] | null;
+  improvements: string[] | null;
+  objectives_met: { title: string; status: "success" | "warning" }[] | null;
+  ai_summary: string | null;
+  submitted_at: string | null;
+  reviewed_at: string | null;
+  created_at: string;
+}
+
+export interface MiniProjectWithSubmission extends MiniProject {
+  submission_status: "not_started" | "in_progress" | "submitted" | "reviewed";
+  submission_id?: string;
+  overall_score?: number | null;
+  submitted_at?: string | null;
+  reviewed_at?: string | null;
+}
+
+export async function getMiniProjects(): Promise<MiniProjectWithSubmission[]> {
+  const responseData = await requestApi("/api/mini-projects");
+  return responseData?.result ?? responseData ?? [];
+}
+
+export async function getMiniProjectById(id: string): Promise<{ project: MiniProjectWithSubmission; submission: UserMiniProjectSubmission | null }> {
+  const responseData = await requestApi(`/api/mini-projects/${id}`);
+  return responseData?.result ?? responseData;
+}
+
+export async function startMiniProject(id: string): Promise<UserMiniProjectSubmission> {
+  const responseData = await requestApi(`/api/mini-projects/${id}/start`, {
+    method: "POST",
+  });
+  return responseData?.result ?? responseData;
+}
+
+export async function submitMiniProject(id: string, file: File): Promise<UserMiniProjectSubmission> {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const response = await fetch(`${API_BASE_URL}/api/mini-projects/${id}/submit`, {
+    method: "POST",
+    body: formData,
+    credentials: "include",
+  });
+
+  const data = await response.json().catch(() => null);
+  if (!response.ok) {
+    throw new Error(data?.message || data?.error || "Mini project submission failed");
+  }
+
+  return data?.result ?? data;
+}
+
+export async function submitMiniProjectGitHub(id: string, githubUrl: string): Promise<UserMiniProjectSubmission> {
+  const response = await fetch(`${API_BASE_URL}/api/mini-projects/${id}/submit`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ github_url: githubUrl }),
+    credentials: "include",
+  });
+
+  const data = await response.json().catch(() => null);
+  if (!response.ok) {
+    throw new Error(data?.message || data?.error || "Mini project GitHub submission failed");
+  }
+
+  return data?.result ?? data;
+}
+
 

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { DashboardSidebar } from "./_components/DashboardSidebar";
 import { TopHeader } from "./_components/TopHeader";
-import { useAuth } from "@/lib/auth-context";
+import { useAuth, User } from "@/lib/auth-context";
 
 export default function DashboardLayout({
   children,
@@ -23,7 +23,7 @@ export default function DashboardLayout({
 
   const role = user?.field_of_study || user?.university || "Career Seeker";
 
-  const getInitials = (currentUser: any) => {
+  const getInitials = (currentUser: User | null) => {
     if (!currentUser) return "U";
     if (currentUser.first_name || currentUser.last_name) {
       const first = currentUser.first_name?.[0] || "";
