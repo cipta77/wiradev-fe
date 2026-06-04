@@ -223,7 +223,7 @@ export const CVScreening = ({ onTabChange }: { onTabChange?: (tab: string) => vo
               Drop your CV here or click to browse
             </h3>
             <p className="text-slate-400 text-[11px] md:text-[12px] font-medium font-poppins mb-6">
-              PDF, DOC, DOCX — Max 10MB
+              PDF, DOCX, JPG, PNG, WEBP — Max 10MB
             </p>
             <label className="bg-[#066EFF] text-white px-8 py-2.5 rounded-full font-semibold text-[13px] flex items-center gap-2 shadow-lg shadow-blue-600/20 transition-all hover:bg-[#0559d1] active:scale-[0.98] cursor-pointer">
               <UploadCloud className="w-4 h-4" />
@@ -231,7 +231,7 @@ export const CVScreening = ({ onTabChange }: { onTabChange?: (tab: string) => vo
               <input
                 type="file"
                 className="hidden"
-                accept=".pdf,.doc,.docx"
+                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.webp"
                 onChange={handleFileSelect}
               />
             </label>

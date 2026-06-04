@@ -1,6 +1,5 @@
 "use client";
 
-import { GithubIcon } from "@/components/icons/GithubIcon";
 import { GoogleIcon } from "@/components/icons/GoogleIcon";
 import { LinkedinIcon } from "@/components/icons/LinkedinIcon";
 import { NotionIcon } from "@/components/icons/NotionIcon";
@@ -8,15 +7,6 @@ import { IntegrationSummary } from "./IntegrationSummary";
 import { IntegrationItem } from "./IntegrationItem";
 
 const integrations = [
-  {
-    id: "github",
-    name: "GitHub",
-    description: "Repository analysis & code review",
-    icon: GithubIcon,
-    statusText: "Connected",
-    status: "connected",
-    indicatorColor: "text-emerald-500 bg-emerald-50",
-  },
   {
     id: "gdrive",
     name: "Google Drive",

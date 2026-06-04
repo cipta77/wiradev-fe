@@ -253,17 +253,10 @@ export interface CvScreeningResult {
   file_name: string;
   file_url: string;
   overall_score: number;
-  contact_score: number;
-  summary_score: number;
-  skills_score: number;
-  experience_score: number;
-  projects_score: number;
-  education_score: number;
-  ats_score: number;
-  keywords_found: string[];
-  keywords_missing: string[];
-  ai_summary: string;
-  recommendations: string[];
+  strengths: string[] | null;
+  weaknesses: string[] | null;
+  ai_summary: string | null;
+  recommendations: string[] | null;
   created_at: string;
 }
 

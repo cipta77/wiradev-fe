@@ -4,14 +4,13 @@ import {
   Layers,
   Brain,
   MessageSquare,
-  GitBranch,
 } from "lucide-react";
 
 const features = [
   {
     title: "Readiness Assessment",
     description:
-      "Upload your CV, transcript, and connect GitHub to get an instant, detailed career readiness score.",
+      "Upload your CV and transcript to get an instant, detailed career readiness score.",
     icon: Target,
     iconColor: "text-blue-600",
     bgColor: "bg-blue-50",
@@ -48,14 +47,7 @@ const features = [
     iconColor: "text-amber-600",
     bgColor: "bg-amber-50",
   },
-  {
-    title: "GitHub Integration",
-    description:
-      "Connect your GitHub to analyze real contributions, commit quality, and collaboration patterns.",
-    icon: GitBranch,
-    iconColor: "text-[#0D3E9B]",
-    bgColor: "bg-blue-50/50",
-  },
+
 ];
 
 export default function FeaturesSection() {

@@ -29,7 +29,6 @@ export interface User {
   transcript_url: string | null;
   onboarding_completed: boolean;
   is_email_verified: boolean;
-  github_connected: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -52,7 +51,7 @@ interface AuthContextType {
   updateRole: (role: string) => Promise<User>;
   uploadCv: (cv: File) => Promise<User>;
   uploadTranscript: (transcript: File) => Promise<User>;
-  completeOnboarding: (githubId?: string) => Promise<User>;
+  completeOnboarding: () => Promise<User>;
   refreshProfile: () => Promise<void>;
   updateAccountSettings: (data: {
     first_name: string;
@@ -249,16 +248,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     return res.result;
   };
 
-  const completeOnboarding = async (githubId?: string) => {
+  const completeOnboarding = async () => {
     if (!user) throw new Error("Unauthorized");
-    const body: { githubId?: string } = {};
-    if (githubId) {
-      body.githubId = githubId;
-    }
-
+    
     const res: { result: User } = await apiClient.post(
       `/api/users/${user.id}/onboarding/complete`,
-      body,
+      {},
     );
     setUser(res.result);
     return res.result;

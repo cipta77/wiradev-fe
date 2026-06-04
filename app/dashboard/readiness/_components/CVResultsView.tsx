@@ -33,16 +33,6 @@ export const CVResultsView: React.FC<CVResultsViewProps> = ({
   onExport,
   result,
 }) => {
-  const categoryScores = [
-    { id: "contact", label: "Contact & Header", score: result.contact_score ?? 0, icon: FileText, color: "emerald" },
-    { id: "summary", label: "Professional Summary", score: result.summary_score ?? 0, icon: Sparkles, color: "amber" },
-    { id: "skills", label: "Technical Skills", score: result.skills_score ?? 0, icon: Zap, color: "emerald" },
-    { id: "experience", label: "Work Experience", score: result.experience_score ?? 0, icon: Briefcase, color: "amber" },
-    { id: "projects", label: "Projects", score: result.projects_score ?? 0, icon: Target, color: "amber" },
-    { id: "education", label: "Education", score: result.education_score ?? 0, icon: GraduationCap, color: "emerald" },
-    { id: "ats", label: "ATS Compatibility", score: result.ats_score ?? 0, icon: ShieldCheck, color: "amber" },
-  ];
-
   const getScoreStatus = (score: number) => {
     if (score >= 80) return { label: "Excellent", color: "text-emerald-500" };
     if (score >= 60) return { label: "Good", color: "text-[#066EFF]" };
@@ -144,86 +134,52 @@ export const CVResultsView: React.FC<CVResultsViewProps> = ({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-        {/* Left Keywords Grid */}
-        <div className="lg:col-span-5 flex flex-col gap-6">
-          <div className="bg-white rounded-[24px] p-6 border border-slate-100 shadow-sm shadow-slate-200/10 flex-1 flex flex-col justify-between">
-            <div>
-              <h3 className="text-[14px] font-semibold text-slate-800 mb-3 font-poppins flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                Keywords Found
-              </h3>
-              <div className="flex flex-wrap gap-1.5 mb-6">
-                {result.keywords_found && result.keywords_found.length > 0 ? (
-                  result.keywords_found.map((kw, idx) => (
-                    <span key={idx} className="px-2.5 py-1 bg-emerald-50 text-emerald-600 text-[11px] font-medium rounded-lg border border-emerald-100/50 font-poppins">
-                      {kw}
-                    </span>
-                  ))
-                ) : (
-                  <span className="text-[12px] text-slate-400 font-poppins">No keywords identified.</span>
-                )}
-              </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
+        {/* Strengths Section */}
+        <div className="bg-white rounded-[24px] p-6 border border-slate-100 shadow-sm shadow-slate-200/10 h-full">
+          <h3 className="text-[16px] font-semibold text-slate-800 font-poppins mb-4 flex items-center gap-2">
+            <div className="w-8 h-8 rounded-full bg-emerald-50 text-emerald-500 flex items-center justify-center shrink-0">
+              <ShieldCheck className="w-4 h-4" />
             </div>
-
-            <div>
-              <h3 className="text-[14px] font-semibold text-slate-800 mb-3 font-poppins flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-rose-500" />
-                Missing Industry Skills
-              </h3>
-              <div className="flex flex-wrap gap-1.5">
-                {result.keywords_missing && result.keywords_missing.length > 0 ? (
-                  result.keywords_missing.map((kw, idx) => (
-                    <span key={idx} className="px-2.5 py-1 bg-rose-50 text-rose-500 text-[11px] font-medium rounded-lg border border-rose-100/50 font-poppins">
-                      {kw}
-                    </span>
-                  ))
-                ) : (
-                  <span className="text-[12px] text-slate-400 font-poppins">All critical skills detected!</span>
-                )}
-              </div>
-            </div>
+            Kelebihan (Strengths)
+          </h3>
+          <div className="space-y-3">
+            {result.strengths && result.strengths.length > 0 ? (
+              result.strengths.map((strength, idx) => (
+                <div key={idx} className="flex items-start gap-3 bg-emerald-50/30 p-3 rounded-xl border border-emerald-100/50">
+                  <div className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0 mt-0.5">
+                    <span className="text-[10px] font-bold">✓</span>
+                  </div>
+                  <p className="text-[13px] text-slate-700 font-medium font-poppins leading-relaxed">{strength}</p>
+                </div>
+              ))
+            ) : (
+              <p className="text-[13px] text-slate-400 font-poppins">Belum ada kelebihan yang terdeteksi.</p>
+            )}
           </div>
         </div>
 
-        {/* Right Category Scores */}
-        <div className="lg:col-span-7">
-          <div className="bg-white rounded-[24px] p-6 border border-slate-100 shadow-sm shadow-slate-200/10 h-full">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-[16px] font-semibold text-slate-800 font-poppins">Section Breakdown</h3>
-              <span className="text-[11px] text-slate-400 font-medium italic font-poppins">ATS Scoring Breakdown</span>
+        {/* Weaknesses Section */}
+        <div className="bg-white rounded-[24px] p-6 border border-slate-100 shadow-sm shadow-slate-200/10 h-full">
+          <h3 className="text-[16px] font-semibold text-slate-800 font-poppins mb-4 flex items-center gap-2">
+            <div className="w-8 h-8 rounded-full bg-amber-50 text-amber-500 flex items-center justify-center shrink-0">
+              <Target className="w-4 h-4" />
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
-              {categoryScores.map((cat, idx) => (
-                <div key={idx} className="bg-slate-50/50 rounded-xl p-3.5 border border-slate-100/50 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className={cn(
-                        "w-7 h-7 rounded-lg flex items-center justify-center shrink-0 border",
-                        cat.color === "emerald" ? "bg-emerald-50 text-emerald-600 border-emerald-100" : "bg-purple-50 text-purple-500 border-purple-100"
-                      )}>
-                        <cat.icon className="w-3.5 h-3.5" />
-                      </div>
-                      <span className="text-[13px] font-semibold text-slate-700 font-poppins">{cat.label}</span>
-                    </div>
-                    <span className={cn(
-                      "text-[13px] font-semibold font-poppins",
-                      cat.score >= 80 ? "text-emerald-500" : cat.score >= 50 ? "text-amber-500" : "text-rose-500"
-                    )}>{cat.score}%</span>
+            Kekurangan (Weaknesses)
+          </h3>
+          <div className="space-y-3">
+            {result.weaknesses && result.weaknesses.length > 0 ? (
+              result.weaknesses.map((weakness, idx) => (
+                <div key={idx} className="flex items-start gap-3 bg-amber-50/30 p-3 rounded-xl border border-amber-100/50">
+                  <div className="w-5 h-5 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center shrink-0 mt-0.5">
+                    <span className="text-[10px] font-bold">!</span>
                   </div>
-                  <div className="h-2 w-full bg-slate-200/50 rounded-full overflow-hidden">
-                    <div
-                      className={cn(
-                        "h-full rounded-full transition-all duration-1000",
-                        cat.score >= 80 ? "bg-emerald-500" : cat.score >= 50 ? "bg-amber-500" : "bg-rose-500"
-                      )}
-                      style={{ width: `${cat.score}%` }}
-                    />
-                  </div>
+                  <p className="text-[13px] text-slate-700 font-medium font-poppins leading-relaxed">{weakness}</p>
                 </div>
-              ))}
-            </div>
+              ))
+            ) : (
+              <p className="text-[13px] text-slate-400 font-poppins">Semua aspek sudah sangat baik!</p>
+            )}
           </div>
         </div>
       </div>

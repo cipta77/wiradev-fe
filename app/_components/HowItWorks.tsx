@@ -5,7 +5,7 @@ const steps = [
     step: "STEP 01",
     title: "Connect & Assess",
     description:
-      "Upload your CV, transcript, and connect your GitHub account for a complete analysis.",
+      "Upload your CV and transcript for a complete analysis.",
     icon: Share2,
     iconColor: "text-blue-600",
     bgColor: "bg-blue-50",

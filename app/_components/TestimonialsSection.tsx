@@ -20,7 +20,7 @@ const testimonials = [
     name: "Dina Wahyuni",
     role: "Fullstack Developer at Bukalapak",
     quote:
-      '"I had no idea my GitHub profile was so sparse. Wirapath\'s analysis and guided projects helped me build a portfolio that actually impressed recruiters."',
+      '"I had no idea my portfolio was so sparse. Wirapath\'s analysis and guided projects helped me build a portfolio that actually impressed recruiters."',
     avatar: "https://avatar.vercel.sh/dina",
   },
 ];
