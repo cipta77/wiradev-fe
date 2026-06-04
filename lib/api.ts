@@ -80,6 +80,14 @@ export type DashboardSummary = {
   streak: number;
   readinessScore: number;
   readinessTrend: string;
+  growthProgress?: {
+    skillsMapped: number;
+    totalSkills: number;
+    projectsDone: number;
+    totalProjects: number;
+    simulationsDone: number;
+    totalSimulations: number;
+  };
 };
 
 export type OnboardingPayload = {
@@ -101,32 +109,33 @@ export async function getDashboardSummary(): Promise<DashboardSummary> {
   const user = data?.user || data?.profile || data?.account || data || {};
   const readiness = data?.readiness || data?.readinessSummary || data || {};
 
-  const firstName = user.firstName || user.first_name || "Alex";
-  const lastName = user.lastName || user.last_name || "Rahman";
+  const firstName = user.firstName || user.first_name || "User";
+  const lastName = user.lastName || user.last_name || "";
   const fullName =
-    user.name || data?.name || `${firstName} ${lastName}`.trim() || "Alex Rahman";
+    user.name || data?.name || `${firstName} ${lastName}`.trim() || "User";
 
   const score =
     readiness.score ??
     readiness.readinessScore ??
     data?.readinessScore ??
     data?.overallReadiness ??
-    62;
+    0;
 
   const trend =
     readiness.trend ||
     readiness.readinessTrend ||
     data?.readinessTrend ||
     data?.trend ||
-    "+8%";
+    "0%";
 
   return {
     name: fullName,
     role: user.role || data?.role || "Career Seeker",
     initials: user.initials || data?.initials || getInitials(fullName),
-    streak: Number(data?.streak ?? user.streak ?? 3),
-    readinessScore: Number(score || 62),
+    streak: Number(data?.streak ?? user.streak ?? 0),
+    readinessScore: Number(score || 0),
     readinessTrend: String(trend),
+    growthProgress: data?.growthProgress,
   };
 }
 

@@ -3,20 +3,18 @@
 import { useEffect, useState } from "react";
 import { ReadinessScoreCard } from "./_components/ReadinessScoreCard";
 import { GrowthProgressCard } from "./_components/GrowthProgressCard";
-import { QuickActionsCard } from "./_components/QuickActionsCard";
 import { SkillsNeedAttentionCard } from "./_components/SkillsNeedAttentionCard";
 import { ContinueWorkingCard } from "./_components/ContinueWorkingCard";
-import { RecentAchievementsCard } from "./_components/RecentAchievementsCard";
 import { WelcomeSection } from "./_components/WelcomeSection";
 import { getDashboardSummary, type DashboardSummary } from "@/lib/api";
 
 const fallbackSummary: DashboardSummary = {
-  name: "Alex",
+  name: "User",
   role: "Career Seeker",
-  initials: "AR",
-  streak: 3,
-  readinessScore: 62,
-  readinessTrend: "+8%",
+  initials: "U",
+  streak: 0,
+  readinessScore: 0,
+  readinessTrend: "0%",
 };
 
 export default function DashboardPage() {
@@ -44,14 +42,13 @@ export default function DashboardPage() {
           </div>
 
           <div className="lg:col-span-7 min-h-[220px] md:min-h-[240px]">
-            <GrowthProgressCard />
+            <GrowthProgressCard data={summary.growthProgress} />
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 pb-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 pb-4">
           <SkillsNeedAttentionCard />
           <ContinueWorkingCard />
-          <RecentAchievementsCard />
         </div>
       </div>
     </div>

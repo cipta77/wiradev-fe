@@ -49,6 +49,8 @@ export const SkillsNeedAttentionCard = () => {
 
         if (uniqueSkills.length > 0) {
           setSkillsNeedAttention(uniqueSkills);
+        } else {
+          setSkillsNeedAttention([]);
         }
       })
       .catch((error) => {
@@ -77,27 +79,34 @@ export const SkillsNeedAttentionCard = () => {
         </button>
       </div>
       <div className="space-y-4 md:space-y-5">
-        {skillsNeedAttention.map((skill, index) => (
-          <div key={`${skill.name}-${index}`} className="flex flex-col gap-2">
-            <div className="flex items-center justify-between">
-              <span className="text-[12px] md:text-[13px] font-medium text-slate-700 tracking-tight">
-                {skill.name}
-              </span>
-              <span className="text-[11px] md:text-[12px] font-medium text-slate-400">
-                {skill.progress}%
-              </span>
-            </div>
-            <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
-              <div
-                className={cn(
-                  "h-full transition-all duration-1000 ease-in-out",
-                  skill.color,
-                )}
-                style={{ width: `${skill.progress}%` }}
-              />
-            </div>
+        {skillsNeedAttention.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-6 text-center">
+             <span className="text-[13px] text-slate-500 font-medium">No evaluation data available.</span>
+             <span className="text-[11px] text-slate-400 mt-1">Please complete the Initial Test first.</span>
           </div>
-        ))}
+        ) : (
+          skillsNeedAttention.map((skill, index) => (
+            <div key={`${skill.name}-${index}`} className="flex flex-col gap-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[12px] md:text-[13px] font-medium text-slate-700 tracking-tight">
+                  {skill.name}
+                </span>
+                <span className="text-[11px] md:text-[12px] font-medium text-slate-400">
+                  {skill.progress}%
+                </span>
+              </div>
+              <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                <div
+                  className={cn(
+                    "h-full transition-all duration-1000 ease-in-out",
+                    skill.color,
+                  )}
+                  style={{ width: `${skill.progress}%` }}
+                />
+              </div>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );

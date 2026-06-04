@@ -8,29 +8,14 @@ import { Target, Code2, Briefcase } from "lucide-react";
  * Optimized for both desktop (lg:col-span-7) and mobile (responsive sizing).
  */
 
-const growthProgress = [
-  { 
-    label: "Skills Mapped", 
-    value: 12, 
-    total: 20, 
-    color: "#3B82F6", // Blue
-    icon: Target 
-  },
-  { 
-    label: "Projects Done", 
-    value: 3, 
-    total: 8, 
-    color: "#10B981", // Emerald
-    icon: Code2 
-  },
-  { 
-    label: "Simulations", 
-    value: 2, 
-    total: 5, 
-    color: "#F59E0B", // Orange/Amber
-    icon: Briefcase 
-  },
-];
+interface GrowthProgressData {
+  skillsMapped: number;
+  totalSkills: number;
+  projectsDone: number;
+  totalProjects: number;
+  simulationsDone: number;
+  totalSimulations: number;
+}
 
 interface CircularProgressProps {
   value: number;
@@ -40,7 +25,7 @@ interface CircularProgressProps {
 }
 
 const CircularProgress = ({ value, total, color, icon: Icon }: CircularProgressProps) => {
-  const percentage = (value / total) * 100;
+  const percentage = total > 0 ? (value / total) * 100 : 0;
   const circumference = 2 * Math.PI * 40; 
 
   return (
@@ -83,7 +68,31 @@ const CircularProgress = ({ value, total, color, icon: Icon }: CircularProgressP
   );
 };
 
-export const GrowthProgressCard = () => {
+export const GrowthProgressCard = ({ data }: { data?: GrowthProgressData }) => {
+  const growthProgress = [
+    { 
+      label: "Skills Mapped", 
+      value: data?.skillsMapped ?? 12, 
+      total: data?.totalSkills ?? 20, 
+      color: "#3B82F6", // Blue
+      icon: Target 
+    },
+    { 
+      label: "Projects Done", 
+      value: data?.projectsDone ?? 3, 
+      total: data?.totalProjects ?? 8, 
+      color: "#10B981", // Emerald
+      icon: Code2 
+    },
+    { 
+      label: "Simulations", 
+      value: data?.simulationsDone ?? 2, 
+      total: data?.totalSimulations ?? 5, 
+      color: "#F59E0B", // Orange/Amber
+      icon: Briefcase 
+    },
+  ];
+
   return (
     <div
       className="bg-white rounded-[24px] p-4 md:p-6 lg:p-8 flex flex-col h-full gap-5 transition-all group border border-slate-100 shadow-sm shadow-slate-200/20"
