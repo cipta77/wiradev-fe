@@ -12,6 +12,7 @@ export const AccountSettings = () => {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [university, setUniversity] = useState("");
+  const [fieldOfStudy, setFieldOfStudy] = useState("");
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
@@ -20,6 +21,7 @@ export const AccountSettings = () => {
       setLastName(user.last_name || "");
       setEmail(user.email || "");
       setUniversity(user.university || "");
+      setFieldOfStudy(user.field_of_study || "");
     }
   }, [user]);
 
@@ -53,6 +55,7 @@ export const AccountSettings = () => {
         last_name: lastName.trim(),
         email: email.trim(),
         university: university.trim(),
+        field_of_study: fieldOfStudy.trim(),
       });
       toast.success("Account settings updated successfully!");
     } catch (error: any) {
@@ -127,6 +130,20 @@ export const AccountSettings = () => {
             onChange={(e) => setUniversity(e.target.value)}
             disabled={isSaving}
             placeholder="e.g. Universitas Indonesia"
+            className="w-full bg-slate-50 border-[0.8px] border-slate-100 rounded-[12px] px-4 py-3 focus:bg-white focus:border-blue-200 outline-none transition-all text-[14px] text-slate-700 font-medium font-poppins disabled:opacity-60"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-[13px] font-semibold text-slate-700 font-poppins ml-1">
+            Major / Field of Study
+          </label>
+          <input
+            type="text"
+            value={fieldOfStudy}
+            onChange={(e) => setFieldOfStudy(e.target.value)}
+            disabled={isSaving}
+            placeholder="e.g. Informatics Engineering"
             className="w-full bg-slate-50 border-[0.8px] border-slate-100 rounded-[12px] px-4 py-3 focus:bg-white focus:border-blue-200 outline-none transition-all text-[14px] text-slate-700 font-medium font-poppins disabled:opacity-60"
           />
         </div>

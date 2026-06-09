@@ -64,6 +64,7 @@ interface AuthContextType {
     last_name: string;
     email: string;
     university: string;
+    field_of_study?: string;
   }) => Promise<User>;
   updatePassword: (data: {
     current_password?: string;
@@ -294,6 +295,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     last_name: string;
     email: string;
     university: string;
+    field_of_study?: string;
   }) => {
     if (!user) throw new Error("Unauthorized");
     const res: { result: User } = await apiClient.patch(
