@@ -48,13 +48,13 @@ export default function ReadinessCenterPage() {
             onTabChange={handleTestComplete}
           />
         ) : !hasAssessment && isAnalyticsTab ? (
-          <NoAssessmentState onAction={() => setActiveTab("initial-test")} />
+          <NoAssessmentState onAction={() => setActiveTab("initial-test")} onSyncComplete={refresh} />
         ) : (
           <>
             {activeTab === "overview" && (
               <div className="space-y-6">
                 <StatsCards data={analytics || undefined} />
-                <AnalysisCards onTabChange={setActiveTab} />
+                <AnalysisCards onTabChange={setActiveTab} onSyncComplete={refresh} />
               </div>
             )}
 

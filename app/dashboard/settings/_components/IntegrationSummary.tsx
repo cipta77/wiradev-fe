@@ -1,47 +1,45 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 
-interface SummaryCardProps {
-  label: string;
-  count: number;
-  sub: string;
-  color: string;
-  bgColor: string;
-  borderColor: string;
-  dotColor: string;
-}
+export const IntegrationSummary = ({
+  connectedCount = 0,
+  disconnectedCount = 0,
+  notConnectedCount = 0,
+}: {
+  connectedCount?: number;
+  disconnectedCount?: number;
+  notConnectedCount?: number;
+}) => {
+  const summaryCards = [
+    {
+      label: "Connected",
+      count: connectedCount,
+      sub: "Active & syncing",
+      color: "text-emerald-500",
+      bgColor: "bg-emerald-50/50",
+      borderColor: "border-emerald-100/50",
+      dotColor: "bg-emerald-500",
+    },
+    {
+      label: "Disconnected",
+      count: disconnectedCount,
+      sub: "Needs attention",
+      color: "text-red-500",
+      bgColor: "bg-red-50/50",
+      borderColor: "border-red-100/50",
+      dotColor: "bg-red-500",
+    },
+    {
+      label: "Not Connected",
+      count: notConnectedCount,
+      sub: "Available",
+      color: "text-slate-500",
+      bgColor: "bg-slate-50/50",
+      borderColor: "border-slate-100/50",
+      dotColor: "bg-slate-400",
+    },
+  ];
 
-const summaryCards: SummaryCardProps[] = [
-  {
-    label: "Connected",
-    count: 2,
-    sub: "Active & syncing",
-    color: "text-emerald-500",
-    bgColor: "bg-emerald-50/50",
-    borderColor: "border-emerald-100/50",
-    dotColor: "bg-emerald-500",
-  },
-  {
-    label: "Disconnected",
-    count: 1,
-    sub: "Needs attention",
-    color: "text-red-500",
-    bgColor: "bg-red-50/50",
-    borderColor: "border-red-100/50",
-    dotColor: "bg-red-500",
-  },
-  {
-    label: "Not Connected",
-    count: 1,
-    sub: "Available",
-    color: "text-slate-500",
-    bgColor: "bg-slate-50/50",
-    borderColor: "border-slate-100/50",
-    dotColor: "bg-slate-400",
-  },
-];
-
-export const IntegrationSummary = () => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       {summaryCards.map((card) => (

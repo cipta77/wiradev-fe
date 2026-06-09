@@ -9,7 +9,7 @@ import Image from "next/image";
 
 export default function OAuthCallbackPage() {
   const router = useRouter();
-  const { loginWithGoogle } = useAuth();
+  const { loginWithGoogle, loginWithGitHub } = useAuth();
   const [loadingText, setLoadingText] = useState("Securing connection...");
   const processed = useRef(false);
 
@@ -22,12 +22,119 @@ export default function OAuthCallbackPage() {
     processed.current = true;
 
     const handleCallback = async () => {
+      // Check query parameters first (e.g. GitHub OAuth callback with ?code=XYZ)
+      const searchParams = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
+      const code = searchParams?.get("code");
+      const githubError = searchParams?.get("error");
+      const stateRaw = searchParams?.get("state");
+
+      // Decode the GitHub-auth marker set by /github-login. Its presence is how we
+      // distinguish a login/sign-up flow (full-page redirect) from the existing
+      // GitHub profile *integration* flow (popup with window.opener, no state).
+      let ghAuth: { isSignUp: boolean; redirect: string } | null = null;
+      if (stateRaw) {
+        try {
+          const decoded = atob(stateRaw.replace(/-/g, "+").replace(/_/g, "/"));
+          const parsed = JSON.parse(decoded);
+          if (parsed && parsed.mode === "github_auth") {
+            ghAuth = {
+              isSignUp: Boolean(parsed.isSignUp),
+              redirect: typeof parsed.redirect === "string" ? parsed.redirect : "",
+            };
+          }
+        } catch {
+          // Not our state — fall through to the integration / Google handling below.
+        }
+      }
+
+      // --- GitHub authentication (login / sign-up) ---
+      if (ghAuth && (code || githubError)) {
+        if (githubError || !code) {
+          toast.error(
+            githubError
+              ? `GitHub authentication error: ${githubError}`
+              : "GitHub authentication failed.",
+          );
+          router.replace(ghAuth.isSignUp ? "/signup" : "/signin");
+          return;
+        }
+
+        try {
+          setLoadingText("Authenticating with GitHub...");
+
+          if (ghAuth.redirect) {
+            // Native mobile (wirapath:// deep link) or Flutter web: exchange the
+            // code on the backend and hand the tokens back to the app.
+            const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+            const res = await fetch(`${BASE_URL}/api/auth/github`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              credentials: "include",
+              body: JSON.stringify({ code, isSignUp: ghAuth.isSignUp }),
+            });
+            const data = await res.json();
+            if (!res.ok) {
+              throw new Error(data.message || "Authentication failed");
+            }
+            const tokens = data.result.tokens;
+            const sep = ghAuth.redirect.includes("?") ? "&" : "?";
+            setLoadingText("Returning to the app...");
+            window.location.href = `${ghAuth.redirect}${sep}access_token=${encodeURIComponent(
+              tokens.accessToken,
+            )}&refresh_token=${encodeURIComponent(tokens.refreshToken)}`;
+            return;
+          }
+
+          // Web app: backend sets the session cookies and we update auth context.
+          setLoadingText("Setting up your session...");
+          const loggedUser = await loginWithGitHub(code, ghAuth.isSignUp);
+          toast.success(
+            ghAuth.isSignUp
+              ? "Successfully registered with GitHub!"
+              : "Successfully logged in with GitHub!",
+          );
+          if (loggedUser.onboarding_completed) {
+            router.replace("/dashboard");
+          } else {
+            router.replace("/onboarding");
+          }
+        } catch (err: any) {
+          console.error("GitHub OAuth error:", err);
+          toast.error(err.message || "Failed to authenticate with GitHub.");
+          router.replace(ghAuth.isSignUp ? "/signup" : "/signin");
+        }
+        return;
+      }
+
+      if (code) {
+        setLoadingText("Sending authorization code back...");
+        if (window.opener) {
+          window.opener.postMessage({ type: "GITHUB_AUTH_CODE", code }, window.location.origin);
+          window.close();
+          return;
+        } else {
+          toast.error("Opener window not found. Please try again.");
+          router.replace("/onboarding");
+          return;
+        }
+      }
+
+      if (githubError) {
+        toast.error(`GitHub authentication error: ${githubError}`);
+        if (window.opener) {
+          window.opener.postMessage({ type: "GITHUB_AUTH_CANCEL" }, window.location.origin);
+          window.close();
+          return;
+        }
+        router.replace("/onboarding");
+        return;
+      }
+
       // 1. Get the hash fragment containing the id_token
       const hash = typeof window !== "undefined" ? window.location.hash : "";
       if (!hash) {
         // Check query parameters in case Google returns code or error there
-        const searchParams = new URLSearchParams(window.location.search);
-        const error = searchParams.get("error");
+        const error = searchParams?.get("error");
         if (error) {
           toast.error(`Authentication error: ${error}`);
         } else {
@@ -86,7 +193,7 @@ export default function OAuthCallbackPage() {
     };
 
     handleCallback();
-  }, [loginWithGoogle, router]);
+  }, [loginWithGoogle, loginWithGitHub, router]);
 
   return (
     <div

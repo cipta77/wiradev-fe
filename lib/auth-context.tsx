@@ -29,8 +29,13 @@ export interface User {
   transcript_url: string | null;
   onboarding_completed: boolean;
   is_email_verified: boolean;
+  github_username?: string | null;
+  github_languages?: any | null;
+  github_readiness_score?: number | null;
+  github_last_synced_at?: string | null;
   created_at: string;
   updated_at: string;
+  providers?: string[];
 }
 
 interface AuthContextType {
@@ -39,6 +44,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   login: (identifier: string, password: string) => Promise<User>;
   loginWithGoogle: (idToken: string, isSignUp?: boolean) => Promise<User>;
+  loginWithGitHub: (code: string, isSignUp?: boolean) => Promise<User>;
   register: (email: string, password: string) => Promise<User>;
   logout: () => void;
   updateProfile: (data: {
@@ -51,7 +57,7 @@ interface AuthContextType {
   updateRole: (role: string) => Promise<User>;
   uploadCv: (cv: File) => Promise<User>;
   uploadTranscript: (transcript: File) => Promise<User>;
-  completeOnboarding: () => Promise<User>;
+  completeOnboarding: (githubId?: string, githubUsername?: string) => Promise<User>;
   refreshProfile: () => Promise<void>;
   updateAccountSettings: (data: {
     first_name: string;
@@ -159,6 +165,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
+  const loginWithGitHub = async (code: string, isSignUp: boolean = false) => {
+    setIsLoading(true);
+    try {
+      const res: {
+        result: {
+          user: User;
+        };
+      } = await apiClient.post(
+        "/api/auth/github",
+        { code, isSignUp },
+        { useAuth: false },
+      );
+
+      const { user: loggedUser } = res.result;
+      setUser(loggedUser);
+      return loggedUser;
+    } catch (e) {
+      setIsLoading(false);
+      throw e;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const register = async (email: string, password: string) => {
     setIsLoading(true);
     try {
@@ -248,12 +278,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     return res.result;
   };
 
-  const completeOnboarding = async () => {
+  const completeOnboarding = async (githubId?: string, githubUsername?: string) => {
     if (!user) throw new Error("Unauthorized");
     
     const res: { result: User } = await apiClient.post(
       `/api/users/${user.id}/onboarding/complete`,
-      {},
+      { githubId, githubUsername },
     );
     setUser(res.result);
     return res.result;
@@ -295,6 +325,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         isAuthenticated: !!user,
         login,
         loginWithGoogle,
+        loginWithGitHub,
         register,
         logout,
         updateProfile,
