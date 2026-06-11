@@ -48,7 +48,7 @@ export default function DashboardPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 pb-4">
           <SkillsNeedAttentionCard />
-          <ContinueWorkingCard />
+          <ContinueWorkingCard activities={summary.activities} />
         </div>
       </div>
     </div>

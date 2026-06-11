@@ -88,6 +88,15 @@ export type DashboardSummary = {
     simulationsDone: number;
     totalSimulations: number;
   };
+  activities?: DashboardActivity[];
+};
+
+export type DashboardActivity = {
+  type: "project" | "simulation" | "review";
+  title: string;
+  status: string;
+  progress: number | null;
+  refId: string | null;
 };
 
 export type OnboardingPayload = {
@@ -136,6 +145,7 @@ export async function getDashboardSummary(): Promise<DashboardSummary> {
     readinessScore: Number(score || 0),
     readinessTrend: String(trend),
     growthProgress: data?.growthProgress,
+    activities: Array.isArray(data?.activities) ? data.activities : [],
   };
 }
 

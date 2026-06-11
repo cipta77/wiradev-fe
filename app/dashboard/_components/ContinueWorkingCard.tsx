@@ -1,38 +1,23 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Play, Code2, Briefcase, FileText, ChevronRight } from "lucide-react";
+import { Play, Code2, Briefcase, FileText, ChevronRight, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { DashboardActivity } from "@/lib/api";
 
-const workItems = [
-  {
-    title: "REST API with Express",
-    status: "In Progress — Step 3 of 4",
-    progress: 75,
-    icon: Code2,
-    iconBg: "bg-emerald-50",
-    iconColor: "text-emerald-500",
-    hasProgress: true,
-  },
-  {
-    title: "Interview at Gojek",
-    status: "Recruiter Simulation",
-    icon: Briefcase,
-    iconBg: "bg-amber-50",
-    iconColor: "text-amber-500",
-    hasProgress: false,
-  },
-  {
-    title: "AI Code Review",
-    status: "Last review: 57/100",
-    icon: FileText,
-    iconBg: "bg-blue-50",
-    iconColor: "text-blue-500",
-    hasProgress: false,
-  },
-];
+const typeStyles = {
+  project: { icon: Code2, iconBg: "bg-emerald-50", iconColor: "text-emerald-500" },
+  simulation: { icon: Briefcase, iconBg: "bg-amber-50", iconColor: "text-amber-500" },
+  review: { icon: FileText, iconBg: "bg-blue-50", iconColor: "text-blue-500" },
+} as const;
 
-export const ContinueWorkingCard = () => {
+const typeRoutes = {
+  project: "/dashboard/dev-hub",
+  simulation: "/dashboard/simulation",
+  review: "/dashboard/dev-hub",
+} as const;
+
+export const ContinueWorkingCard = ({ activities = [] }: { activities?: DashboardActivity[] }) => {
   const router = useRouter();
 
   return (
@@ -49,45 +34,60 @@ export const ContinueWorkingCard = () => {
         </h3>
       </div>
 
-      <div className="space-y-3">
-        {workItems.map((item) => (
-          <div
-            key={item.title}
-            onClick={() => router.push("/dashboard/dev-hub")}
-            className="group flex flex-col gap-2 p-3 rounded-[16px] border border-slate-50 bg-[#F8FAFC] hover:bg-slate-50 transition-all cursor-pointer"
-          >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <div
-                  className={cn(
-                    "w-9 h-9 rounded-[12px] flex items-center justify-center shrink-0",
-                    item.iconBg
-                  )}
-                >
-                  <item.icon className={cn("w-4.5 h-4.5", item.iconColor)} />
-                </div>
-                <div className="min-w-0">
-                  <h4 className="text-[13px] font-semibold text-slate-800 font-poppins tracking-tight truncate">
-                    {item.title}
-                  </h4>
-                  <p className="text-[11px] font-medium text-slate-400 truncate">
-                    {item.status}
-                  </p>
-                </div>
-              </div>
-              <ChevronRight className="w-3.5 h-3.5 text-slate-300 group-hover:text-slate-400 transition-all" />
-            </div>
-            {item.hasProgress && (
-              <div className="w-full h-1.5 bg-slate-200/50 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-emerald-500 transition-all duration-1000 ease-in-out"
-                  style={{ width: `${item.progress}%` }}
-                />
-              </div>
-            )}
+      {activities.length === 0 ? (
+        <div className="flex-1 flex flex-col items-center justify-center gap-2 py-6 text-center">
+          <div className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center">
+            <Sparkles className="w-5 h-5 text-slate-300" />
           </div>
-        ))}
-      </div>
+          <p className="text-[12px] text-slate-400 font-medium px-4">
+            Nothing in progress yet. Start a project or simulation to see it here.
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {activities.map((item) => {
+            const style = typeStyles[item.type] ?? typeStyles.project;
+            const Icon = style.icon;
+            return (
+              <div
+                key={`${item.type}-${item.refId}-${item.title}`}
+                onClick={() => router.push(typeRoutes[item.type] ?? "/dashboard/dev-hub")}
+                className="group flex flex-col gap-2 p-3 rounded-[16px] border border-slate-50 bg-[#F8FAFC] hover:bg-slate-50 transition-all cursor-pointer"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <div
+                      className={cn(
+                        "w-9 h-9 rounded-[12px] flex items-center justify-center shrink-0",
+                        style.iconBg
+                      )}
+                    >
+                      <Icon className={cn("w-4.5 h-4.5", style.iconColor)} />
+                    </div>
+                    <div className="min-w-0">
+                      <h4 className="text-[13px] font-semibold text-slate-800 font-poppins tracking-tight truncate">
+                        {item.title}
+                      </h4>
+                      <p className="text-[11px] font-medium text-slate-400 truncate">
+                        {item.status}
+                      </p>
+                    </div>
+                  </div>
+                  <ChevronRight className="w-3.5 h-3.5 text-slate-300 group-hover:text-slate-400 transition-all" />
+                </div>
+                {item.progress != null && (
+                  <div className="w-full h-1.5 bg-slate-200/50 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-emerald-500 transition-all duration-1000 ease-in-out"
+                      style={{ width: `${item.progress}%` }}
+                    />
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 };
