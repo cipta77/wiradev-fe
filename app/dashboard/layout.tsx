@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { DashboardSidebar } from "./_components/DashboardSidebar";
 import { TopHeader } from "./_components/TopHeader";
 import { useAuth, User } from "@/lib/auth-context";
+import { recordRecentPage } from "@/lib/recent-activity";
 
 export default function DashboardLayout({
   children,
@@ -12,6 +14,12 @@ export default function DashboardLayout({
 }) {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const { user } = useAuth();
+  const pathname = usePathname();
+
+  // Track visited feature pages for the home Continue Working card.
+  useEffect(() => {
+    recordRecentPage(pathname);
+  }, [pathname]);
 
   const toggleSidebar = () => setIsSidebarCollapsed(!isSidebarCollapsed);
 

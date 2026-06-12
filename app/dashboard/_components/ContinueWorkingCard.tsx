@@ -1,24 +1,45 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Play, Code2, Briefcase, FileText, ChevronRight, Sparkles } from "lucide-react";
+import { Play, Code2, Briefcase, FileText, ChevronRight, Sparkles, LayoutDashboard } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { DashboardActivity } from "@/lib/api";
+import { getRecentPages } from "@/lib/recent-activity";
 
 const typeStyles = {
   project: { icon: Code2, iconBg: "bg-emerald-50", iconColor: "text-emerald-500" },
   simulation: { icon: Briefcase, iconBg: "bg-amber-50", iconColor: "text-amber-500" },
   review: { icon: FileText, iconBg: "bg-blue-50", iconColor: "text-blue-500" },
+  page: { icon: LayoutDashboard, iconBg: "bg-blue-50", iconColor: "text-blue-500" },
 } as const;
 
 const typeRoutes = {
   project: "/dashboard/dev-hub",
   simulation: "/dashboard/simulation",
   review: "/dashboard/dev-hub",
+  page: "/dashboard",
 } as const;
+
+type CardItem = DashboardActivity & { route?: string };
 
 export const ContinueWorkingCard = ({ activities = [] }: { activities?: DashboardActivity[] }) => {
   const router = useRouter();
+  const [items, setItems] = useState<CardItem[]>(activities);
+
+  useEffect(() => {
+    // Recently visited pages first, then DB-backed activities (deduped by title).
+    const recent: CardItem[] = getRecentPages().map((p) => ({
+      type: (p.type in typeStyles ? p.type : "page") as CardItem["type"],
+      title: p.title,
+      status: "Recently visited",
+      progress: null,
+      refId: null,
+      route: p.route,
+    }));
+    const titles = new Set(recent.map((r) => r.title));
+    setItems([...recent, ...activities.filter((a) => !titles.has(a.title))].slice(0, 4));
+  }, [activities]);
 
   return (
     <div
@@ -34,7 +55,7 @@ export const ContinueWorkingCard = ({ activities = [] }: { activities?: Dashboar
         </h3>
       </div>
 
-      {activities.length === 0 ? (
+      {items.length === 0 ? (
         <div className="flex-1 flex flex-col items-center justify-center gap-2 py-6 text-center">
           <div className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center">
             <Sparkles className="w-5 h-5 text-slate-300" />
@@ -45,13 +66,13 @@ export const ContinueWorkingCard = ({ activities = [] }: { activities?: Dashboar
         </div>
       ) : (
         <div className="space-y-3">
-          {activities.map((item) => {
+          {items.map((item) => {
             const style = typeStyles[item.type] ?? typeStyles.project;
             const Icon = style.icon;
             return (
               <div
                 key={`${item.type}-${item.refId}-${item.title}`}
-                onClick={() => router.push(typeRoutes[item.type] ?? "/dashboard/dev-hub")}
+                onClick={() => router.push(item.route ?? typeRoutes[item.type] ?? "/dashboard/dev-hub")}
                 className="group flex flex-col gap-2 p-3 rounded-[16px] border border-slate-50 bg-[#F8FAFC] hover:bg-slate-50 transition-all cursor-pointer"
               >
                 <div className="flex items-center justify-between">
