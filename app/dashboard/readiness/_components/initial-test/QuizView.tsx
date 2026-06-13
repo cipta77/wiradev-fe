@@ -22,9 +22,11 @@ interface AssessmentSubmitResult {
 interface QuizViewProps {
   onComplete: (answers: Record<string, string>, time: number, responseResult?: AssessmentSubmitResult) => void;
   onBack?: () => void;
+  // Only render these section ids. Empty/undefined => all sections.
+  selectedSections?: string[];
 }
 
-const QuizView: React.FC<QuizViewProps> = ({ onComplete, onBack }) => {
+const QuizView: React.FC<QuizViewProps> = ({ onComplete, onBack, selectedSections }) => {
   const { getQuestions, submitAssessment, loading } = useAssessment();
   const [categories, setCategories] = useState<AssessmentCategory[]>([]);
   const [activeSectionIdx, setActiveSectionIdx] = useState(0);
@@ -43,16 +45,30 @@ interface GetQuestionsResponse {
     async function loadData() {
       const data = await getQuestions();
       // Handle standard and nested response wrapper without 'any' type assertions
+      let all: AssessmentCategory[];
       if (Array.isArray(data)) {
-        setCategories(data);
+        all = data;
       } else {
         const responseWrap = data as unknown as GetQuestionsResponse;
-        setCategories(responseWrap?.result || []);
+        all = responseWrap?.result || [];
       }
+
+      // Scope the quiz to the sections the user picked in the AssessmentView.
+      // Fall back to all sections if no selection was provided or nothing matches.
+      if (selectedSections && selectedSections.length > 0) {
+        const filtered = all.filter(
+          (c) =>
+            selectedSections.includes(c.id) ||
+            selectedSections.includes(c.slug),
+        );
+        all = filtered.length > 0 ? filtered : all;
+      }
+
+      setCategories(all);
       setFetching(false);
     }
     loadData();
-  }, [getQuestions]);
+  }, [getQuestions, selectedSections]);
 
   useEffect(() => {
     if (fetching) return;

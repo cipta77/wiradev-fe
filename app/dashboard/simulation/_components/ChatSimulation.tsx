@@ -13,14 +13,22 @@ import {
   AlertCircle,
   CheckCircle,
   XCircle,
+  Clock,
+  Flag,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   startSimulation,
   sendSimulationMessage,
+  endSimulation,
   SimulationMessage,
   SimulationResultReport,
 } from "@/lib/api";
+
+// The conversation is open-ended (no fixed question count). Once the candidate
+// sends their first message a 30-minute countdown begins; when it reaches zero
+// the interview auto-ends and is evaluated. The user can also end it early.
+const INTERVIEW_DURATION_SECONDS = 30 * 60;
 
 const BotMessage = ({ text }: { text: string }) => (
   <div className="flex items-start gap-2 max-w-[90%] md:max-w-[85%] animate-in fade-in slide-in-from-left-2 duration-350">
@@ -84,8 +92,13 @@ export const ChatSimulation = ({
   const [error, setError] = useState<string | null>(null);
   const [isWaitingForBot, setIsWaitingForBot] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
+  const [isEnding, setIsEnding] = useState(false);
   const [resultReport, setResultReport] =
     useState<SimulationResultReport | null>(null);
+
+  // 30-minute interview countdown. `null` until the candidate sends their first
+  // message; then counts down to 0, at which point the interview auto-ends.
+  const [timeLeft, setTimeLeft] = useState<number | null>(null);
 
   const [isListening, setIsListening] = useState(false);
   const [listeningTime, setListeningTime] = useState(0);
@@ -100,6 +113,8 @@ export const ChatSimulation = ({
       setLoading(true);
       setError(null);
       setIsFinished(false);
+      setIsEnding(false);
+      setTimeLeft(null);
       setResultReport(null);
       setMessages([]);
 
@@ -120,6 +135,34 @@ export const ChatSimulation = ({
     }
   };
 
+  // End the interview/negotiation early (button) or automatically (timer hits
+  // zero), then fetch the AI evaluation report.
+  const handleEndInterview = async () => {
+    if (!simulationId || isFinished || isEnding) return;
+    if (isListening) stopListening();
+    setIsEnding(true);
+    setTimeLeft(0);
+    try {
+      const res = await endSimulation(simulationId);
+      if (res.result) {
+        setResultReport(res.result);
+        setIsFinished(true);
+      }
+    } catch (err) {
+      console.error("Failed to end simulation:", err);
+      const botErr: SimulationMessage = {
+        id: (Date.now() + 2).toString(),
+        simulation_id: simulationId,
+        sender: "bot",
+        text: "Sorry, I couldn't generate your evaluation just now. Please try ending the session again.",
+        created_at: new Date().toISOString(),
+      };
+      setMessages((prev) => [...prev, botErr]);
+    } finally {
+      setIsEnding(false);
+    }
+  };
+
   useEffect(() => {
     let ignore = false;
     const start = async () => {
@@ -130,6 +173,8 @@ export const ChatSimulation = ({
       setLoading(true);
       setError(null);
       setIsFinished(false);
+      setIsEnding(false);
+      setTimeLeft(null);
       setResultReport(null);
       setMessages([]);
 
@@ -174,6 +219,25 @@ export const ChatSimulation = ({
     }
     return () => clearInterval(timer);
   }, [isListening]);
+
+  // Interview countdown: tick down once per second after the candidate's first
+  // message until it reaches zero.
+  useEffect(() => {
+    if (timeLeft === null || timeLeft <= 0 || isFinished || isEnding) return;
+    const t = setTimeout(
+      () => setTimeLeft((p) => (p === null ? null : p - 1)),
+      1000,
+    );
+    return () => clearTimeout(t);
+  }, [timeLeft, isFinished, isEnding]);
+
+  // When the countdown hits zero, automatically end and evaluate the session.
+  useEffect(() => {
+    if (timeLeft === 0 && !isFinished && !isEnding) {
+      handleEndInterview();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [timeLeft, isFinished, isEnding]);
 
   const formatTime = (s: number) =>
     `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
@@ -243,12 +307,21 @@ export const ChatSimulation = ({
 
   const handleSend = async (overrideText?: string) => {
     const textToSend = overrideText || inputText;
-    if (!textToSend.trim() || !simulationId || isWaitingForBot || isFinished)
+    if (
+      !textToSend.trim() ||
+      !simulationId ||
+      isWaitingForBot ||
+      isFinished ||
+      isEnding
+    )
       return;
 
     if (isListening) stopListening();
     setShowVoiceResult(false);
     setInputText("");
+
+    // Start the 30-minute countdown on the candidate's first message.
+    if (timeLeft === null) setTimeLeft(INTERVIEW_DURATION_SECONDS);
 
     // 1. Render user message locally
     const userMsg: SimulationMessage = {
@@ -363,15 +436,45 @@ export const ChatSimulation = ({
           </div>
         </div>
 
-        {isFinished && (
-          <button
-            onClick={initSession}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-[#066EFF] text-[11px] font-bold rounded-xl border border-blue-100 transition-all hover:bg-blue-100/50 active:scale-95 cursor-pointer font-poppins"
-          >
-            <RefreshCw className="w-3 h-3 animate-spin-hover" />
-            Restart
-          </button>
-        )}
+        <div className="flex items-center gap-2">
+          {!loading && !error && !isFinished && timeLeft !== null && (
+            <>
+              <span
+                className={cn(
+                  "flex items-center gap-1.5 px-2.5 py-1.5 text-[11px] font-bold rounded-xl border font-poppins tabular-nums",
+                  timeLeft <= 60
+                    ? "bg-rose-50 text-rose-600 border-rose-100 animate-pulse"
+                    : "bg-slate-50 text-slate-500 border-slate-100",
+                )}
+                title="Time remaining in this session"
+              >
+                <Clock className="w-3 h-3" />
+                {formatTime(timeLeft)}
+              </span>
+              <button
+                onClick={handleEndInterview}
+                disabled={isEnding}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-rose-50 text-rose-600 text-[11px] font-bold rounded-xl border border-rose-100 transition-all hover:bg-rose-100/50 active:scale-95 cursor-pointer font-poppins disabled:opacity-55"
+              >
+                <Flag className="w-3 h-3" />
+                {isEnding
+                  ? "Ending..."
+                  : type === "recruiter"
+                    ? "End Interview"
+                    : "End Negotiation"}
+              </button>
+            </>
+          )}
+          {isFinished && (
+            <button
+              onClick={initSession}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-[#066EFF] text-[11px] font-bold rounded-xl border border-blue-100 transition-all hover:bg-blue-100/50 active:scale-95 cursor-pointer font-poppins"
+            >
+              <RefreshCw className="w-3 h-3 animate-spin-hover" />
+              Restart
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Main Area */}
@@ -432,9 +535,9 @@ export const ChatSimulation = ({
                   : "Salary Negotiation Performance"}
               </h3>
               <p className="text-[12.5px] text-slate-500 leading-relaxed font-poppins">
-                You have completed the 3-question AI simulation. Here is the
-                evaluation and feedback generated by the HR coaching engine to
-                improve your response style.
+                You have completed the AI simulation. Here is the evaluation and
+                feedback generated by the HR coaching engine to improve your
+                response style.
               </p>
             </div>
 
@@ -617,7 +720,7 @@ export const ChatSimulation = ({
                   onChange={(e) => setInputText(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSend()}
                   placeholder="Type your response..."
-                  disabled={isWaitingForBot}
+                  disabled={isWaitingForBot || isEnding}
                   className="bg-transparent border-none outline-none w-full text-[13px] text-slate-700 placeholder:text-slate-400 font-medium font-poppins disabled:opacity-55"
                 />
               </div>
@@ -639,7 +742,7 @@ export const ChatSimulation = ({
 
               <button
                 onClick={() => handleSend()}
-                disabled={!inputText.trim() || isWaitingForBot}
+                disabled={!inputText.trim() || isWaitingForBot || isEnding}
                 className="w-10 h-10 rounded-xl bg-[#066EFF] flex items-center justify-center text-white hover:bg-blue-600 transition-all shrink-0 active:scale-95 group shadow-lg shadow-blue-500/20 disabled:opacity-40"
               >
                 <Send className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />

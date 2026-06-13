@@ -379,6 +379,15 @@ export async function sendSimulationMessage(
   return responseData?.result ?? responseData;
 }
 
+export async function endSimulation(
+  id: string
+): Promise<{ result?: SimulationResultReport }> {
+  const responseData = await requestApi(`/api/simulations/${id}/end`, {
+    method: "POST",
+  });
+  return responseData?.result ?? responseData;
+}
+
 export async function getSimulationDetails(
   id: string
 ): Promise<{ simulation: SimulationSession; messages: SimulationMessage[]; result?: SimulationResultReport }> {

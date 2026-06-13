@@ -56,6 +56,17 @@ const ResultView: React.FC<ResultViewProps> = ({ answers, timeTaken, onTabChange
   const feedbackKey = scorePercentage >= 75 ? "high" : scorePercentage >= 45 ? "medium" : "low";
   const activeFeedback = feedbacks[feedbackKey];
 
+  // Score bar/ring color scales with the result: red → orange → yellow → green
+  // instead of always showing red regardless of how the user performed.
+  const scoreStrokeClass =
+    scorePercentage >= 75
+      ? "stroke-emerald-500"
+      : scorePercentage >= 60
+        ? "stroke-yellow-400"
+        : scorePercentage >= 40
+          ? "stroke-orange-500"
+          : "stroke-red-500";
+
   return (
     <div className="w-full max-w-[800px] mx-auto animate-in fade-in duration-500 pb-10">
       <div className="bg-white rounded-[20px] border border-slate-100 overflow-hidden shadow-sm shadow-slate-200/20">
@@ -86,7 +97,7 @@ const ResultView: React.FC<ResultViewProps> = ({ answers, timeTaken, onTabChange
                   cx="60"
                   cy="60"
                   r="54"
-                  className="stroke-red-500 fill-none transition-all duration-1000"
+                  className={cn("fill-none transition-all duration-1000", scoreStrokeClass)}
                   strokeWidth="10"
                   strokeDasharray="339.3"
                   strokeDashoffset={339.3 - (scorePercentage / 100) * 339.3}
@@ -137,7 +148,7 @@ const ResultView: React.FC<ResultViewProps> = ({ answers, timeTaken, onTabChange
                 <div className="text-right">
                   <span className={cn(
                     "text-[14px] font-semibold font-poppins leading-none",
-                    scorePercentage >= 75 ? "text-emerald-600" : scorePercentage >= 45 ? "text-amber-500" : "text-red-500"
+                    scorePercentage >= 75 ? "text-emerald-600" : scorePercentage >= 60 ? "text-yellow-500" : scorePercentage >= 40 ? "text-orange-500" : "text-red-500"
                   )}>{scorePercentage}%</span>
                   <p className="text-[9px] font-bold text-slate-400 font-poppins uppercase mt-1">
                     {scorePercentage >= 75 ? "Ready" : scorePercentage >= 45 ? "Developing" : "Needs Focus"}

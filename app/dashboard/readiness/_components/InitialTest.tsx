@@ -31,6 +31,8 @@ export const InitialTest = ({
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [timeTaken, setTimeTaken] = useState(0);
   const [responseResult, setResponseResult] = useState<AssessmentSubmitResult | undefined>(undefined);
+  // Section ids the user chose to attempt in the AssessmentView picker.
+  const [selectedSections, setSelectedSections] = useState<string[]>([]);
 
   const handleQuizComplete = (userAnswers: Record<string, string>, time: number, resResult?: AssessmentSubmitResult) => {
     setAnswers(userAnswers);
@@ -45,12 +47,24 @@ export const InitialTest = ({
   }
 
   if (isQuizRunning) {
-    return <QuizView onComplete={handleQuizComplete} onBack={() => setIsQuizRunning(false)} />;
+    return (
+      <QuizView
+        onComplete={handleQuizComplete}
+        onBack={() => setIsQuizRunning(false)}
+        selectedSections={selectedSections}
+      />
+    );
   }
 
   if (isStarted) {
     return (
-      <AssessmentView onStart={() => setIsQuizRunning(true)} onBack={onBack} />
+      <AssessmentView
+        onStart={(ids) => {
+          setSelectedSections(ids);
+          setIsQuizRunning(true);
+        }}
+        onBack={onBack}
+      />
     );
   }
 

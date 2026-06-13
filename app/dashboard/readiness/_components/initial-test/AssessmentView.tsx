@@ -1,19 +1,21 @@
 import React, { useState, useEffect } from "react";
-import { 
-  ArrowLeft, 
-  ArrowRight, 
-  BookOpen, 
-  Clock, 
+import {
+  ArrowLeft,
+  ArrowRight,
+  BookOpen,
+  Clock,
   Layers,
   Zap,
-  Loader2
+  Loader2,
+  Check
 } from "lucide-react";
 import * as Icons from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getAssessmentCategories } from "@/lib/api";
 
 interface AssessmentViewProps {
-  onStart: () => void;
+  // Receives the ids of the sections the user chose to attempt.
+  onStart: (selectedIds: string[]) => void;
   onBack?: () => void;
 }
 
@@ -29,6 +31,8 @@ interface DynamicCategory {
 export const AssessmentView: React.FC<AssessmentViewProps> = ({ onStart, onBack }) => {
   const [categories, setCategories] = useState<DynamicCategory[]>([]);
   const [loading, setLoading] = useState(true);
+  // Sections the user has chosen to attempt. Default: all selected.
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   useEffect(() => {
     async function fetchCats() {
@@ -37,6 +41,7 @@ export const AssessmentView: React.FC<AssessmentViewProps> = ({ onStart, onBack 
         // Backend returns standard wrap response { success: true, result: [...] }
         const result = Array.isArray(data) ? data : data?.result || [];
         setCategories(result);
+        setSelectedIds(result.map((c: DynamicCategory) => c.id));
       } catch (err) {
         console.error("Failed to load assessment metadata:", err);
       } finally {
@@ -45,6 +50,20 @@ export const AssessmentView: React.FC<AssessmentViewProps> = ({ onStart, onBack 
     }
     fetchCats();
   }, []);
+
+  const isSelected = (id: string) => selectedIds.includes(id);
+  const selectedCount = selectedIds.length;
+  const allSelected = categories.length > 0 && selectedCount === categories.length;
+
+  const toggleSection = (id: string) => {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
+    );
+  };
+
+  const toggleAll = () => {
+    setSelectedIds(allSelected ? [] : categories.map((c) => c.id));
+  };
 
   const themeColors: Record<string, string> = {
     blue: "text-blue-600 bg-blue-50 bg-blue-500",
@@ -85,9 +104,9 @@ export const AssessmentView: React.FC<AssessmentViewProps> = ({ onStart, onBack 
         <div className="px-6 md:px-8 py-6 md:py-8">
           <div className="flex flex-wrap items-center justify-center gap-3 mb-8">
             {[
-              { label: `${categories.length * 5} Tasks`, icon: BookOpen, color: "text-blue-600 bg-blue-50/50 border-blue-100" },
-              { label: `~${categories.length * 7} min`, icon: Clock, color: "text-emerald-600 bg-emerald-50/50 border-emerald-100" },
-              { label: `${categories.length} Sections`, icon: Layers, color: "text-amber-600 bg-amber-50/50 border-amber-100" },
+              { label: `${selectedCount * 5} Tasks`, icon: BookOpen, color: "text-blue-600 bg-blue-50/50 border-blue-100" },
+              { label: `~${selectedCount * 7} min`, icon: Clock, color: "text-emerald-600 bg-emerald-50/50 border-emerald-100" },
+              { label: `${selectedCount}/${categories.length} Sections`, icon: Layers, color: "text-amber-600 bg-amber-50/50 border-amber-100" },
             ].map((stat) => (
               <div 
                 key={stat.label}
@@ -103,8 +122,25 @@ export const AssessmentView: React.FC<AssessmentViewProps> = ({ onStart, onBack 
           </div>
 
           <div className="space-y-5 max-w-[660px] mx-auto">
-            <h3 className="text-[12px] font-semibold text-slate-400 mb-4 font-poppins uppercase tracking-wider">Assessment sections</h3>
-            
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-[12px] font-semibold text-slate-400 font-poppins uppercase tracking-wider">
+                Choose sections to attempt
+              </h3>
+              {!loading && categories.length > 0 && (
+                <button
+                  onClick={toggleAll}
+                  className="text-[12px] font-semibold text-[#066EFF] hover:underline cursor-pointer font-poppins"
+                >
+                  {allSelected ? "Clear all" : "Select all"}
+                </button>
+              )}
+            </div>
+
+            <p className="text-[12px] text-slate-400 font-poppins -mt-2">
+              Pick only the sections you want to work on now — you don&apos;t have to
+              do all of them at once.
+            </p>
+
             {loading ? (
               <div className="flex items-center justify-center py-10">
                 <Loader2 className="w-8 h-8 text-[#066EFF] animate-spin" />
@@ -115,15 +151,24 @@ export const AssessmentView: React.FC<AssessmentViewProps> = ({ onStart, onBack 
                   const iconKey = section.icon as keyof typeof Icons;
                   const Icon = (Icons[iconKey] as Icons.LucideIcon) || Icons.Layers;
                   const sectionColor = section.color || "blue";
-                  
+                  const selected = isSelected(section.id);
+
                   return (
-                    <div 
+                    <button
                       key={section.id}
-                      className="bg-[#F8FAFC]/50 p-4 md:p-5 rounded-[18px] border border-slate-50 flex items-center justify-between group transition-all hover:bg-[#F8FAFC]"
+                      type="button"
+                      onClick={() => toggleSection(section.id)}
+                      aria-pressed={selected}
+                      className={cn(
+                        "w-full text-left p-4 md:p-5 rounded-[18px] border flex items-center justify-between group transition-all cursor-pointer",
+                        selected
+                          ? "bg-blue-50/40 border-blue-200"
+                          : "bg-[#F8FAFC]/50 border-slate-50 hover:bg-[#F8FAFC] opacity-70",
+                      )}
                     >
                       <div className="flex items-center gap-5">
                         <div className={cn(
-                          "w-10 h-10 rounded-xl flex items-center justify-center shrink-0", 
+                          "w-10 h-10 rounded-xl flex items-center justify-center shrink-0",
                           sectionColor === "blue" ? "text-blue-600 bg-blue-50" :
                           sectionColor === "purple" ? "text-purple-600 bg-purple-50" :
                           sectionColor === "emerald" ? "text-emerald-600 bg-emerald-50" : "text-orange-600 bg-orange-50"
@@ -139,13 +184,17 @@ export const AssessmentView: React.FC<AssessmentViewProps> = ({ onStart, onBack 
                           </p>
                         </div>
                       </div>
-                      <div className={cn(
-                        "w-1.5 h-1.5 rounded-full", 
-                        sectionColor === "blue" ? "bg-blue-500" :
-                        sectionColor === "purple" ? "bg-purple-500" :
-                        sectionColor === "emerald" ? "bg-emerald-500" : "bg-orange-500"
-                      )} />
-                    </div>
+                      <div
+                        className={cn(
+                          "w-6 h-6 rounded-md border-2 flex items-center justify-center shrink-0 transition-all",
+                          selected
+                            ? "bg-[#066EFF] border-[#066EFF] text-white"
+                            : "bg-white border-slate-200 text-transparent",
+                        )}
+                      >
+                        <Check className="w-4 h-4" strokeWidth={3} />
+                      </div>
+                    </button>
                   );
                 })}
               </div>
@@ -165,13 +214,15 @@ export const AssessmentView: React.FC<AssessmentViewProps> = ({ onStart, onBack 
             </div>
           </div>
 
-          <div className="mt-8 flex justify-center">
+          <div className="mt-8 flex flex-col items-center gap-2">
             <button
-              onClick={onStart}
-              disabled={loading || categories.length === 0}
+              onClick={() => onStart(selectedIds)}
+              disabled={loading || categories.length === 0 || selectedCount === 0}
               className="bg-[#066EFF] text-white w-full py-4 rounded-[14px] font-semibold text-[15px] flex items-center justify-center gap-2.5 hover:bg-[#0052cc] transition-all active:scale-[0.98] group cursor-pointer disabled:opacity-50"
             >
-              Start Assessment
+              {selectedCount === 0
+                ? "Select at least one section"
+                : `Start Assessment (${selectedCount} ${selectedCount === 1 ? "section" : "sections"})`}
               <ArrowRight className="w-4.5 h-4.5 transition-transform group-hover:translate-x-1" />
             </button>
           </div>
