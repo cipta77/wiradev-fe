@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Search, Bell, X, Menu } from "lucide-react";
+import { Search, X, Menu } from "lucide-react";
 import { DashboardSidebar } from "./DashboardSidebar";
 import {
   Sheet,
@@ -83,15 +83,6 @@ export const TopHeader = ({
       </div>
 
       <div className="flex items-center gap-1 md:gap-1">
-        <button className="relative w-9 h-9 md:w-10 md:h-10 flex items-center justify-center text-slate-500 transition-all">
-          <Bell className="w-5 h-5" />
-          <span className="absolute top-[8px] right-[8px] w-2 h-2 bg-[#F97316] rounded-full border-2 border-white"></span>
-        </button>
-
-        <div
-          className="h-7 w-px mx-4 bg-slate-200 hidden xs:block"
-        />
-
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-[#066EFF] flex items-center justify-center text-white font-normal text-[12px] md:text-[14px] cursor-pointer">
             {initials}

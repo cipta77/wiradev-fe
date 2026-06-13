@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Poppins, Darker_Grotesque } from "next/font/google";
 import { AuthProvider } from "@/lib/auth-context";
 import { AuthGuard } from "@/components/auth-guard";
+import { ThemeProvider } from "@/lib/theme-provider";
+import { LanguageProvider } from "@/lib/i18n";
 import { Toaster } from "sonner";
 import Script from "next/script";
 import "./globals.css";
@@ -31,15 +33,25 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={`${poppins.variable} ${darkerGrotesque.variable} h-full antialiased scroll-smooth`}
     >
       <body
-        className="min-h-full flex flex-col bg-white"
+        className="min-h-full flex flex-col bg-background"
         cz-shortcut-listen="true"
       >
-        <AuthProvider>
-          <AuthGuard>{children}</AuthGuard>
-        </AuthProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <LanguageProvider>
+            <AuthProvider>
+              <AuthGuard>{children}</AuthGuard>
+            </AuthProvider>
+          </LanguageProvider>
+        </ThemeProvider>
         <Toaster position="top-center" richColors />
         <Script
           src="https://accounts.google.com/gsi/client"

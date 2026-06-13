@@ -2,32 +2,30 @@
 
 import React from "react";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/lib/i18n";
 import {
   User,
   Lock,
   Bell,
   Languages,
-  CreditCard,
   Share2,
-  Shield,
   HelpCircle,
   LucideIcon,
-  ChevronRight,
 } from "lucide-react";
 
 interface Tab {
   id: string;
-  label: string;
+  labelKey: string;
   icon: LucideIcon;
 }
 
 const settingsTabs: Tab[] = [
-  { id: "account", label: "Account", icon: User },
-  { id: "security", label: "Password & Security", icon: Lock },
-  { id: "notifications", label: "Notifications", icon: Bell },
-  { id: "appearance", label: "Language & Appearance", icon: Languages },
-  { id: "integrations", label: "Integrations", icon: Share2 },
-  { id: "support", label: "Help & Support", icon: HelpCircle },
+  { id: "account", labelKey: "settings.account", icon: User },
+  { id: "security", labelKey: "settings.security", icon: Lock },
+  { id: "notifications", labelKey: "settings.notifications", icon: Bell },
+  { id: "appearance", labelKey: "settings.appearance", icon: Languages },
+  { id: "integrations", labelKey: "settings.integrations", icon: Share2 },
+  { id: "support", labelKey: "settings.support", icon: HelpCircle },
 ];
 
 interface SettingsSidebarProps {
@@ -39,6 +37,7 @@ export const SettingsSidebar = ({
   activeTab,
   setActiveTab,
 }: SettingsSidebarProps) => {
+  const { t } = useLanguage();
   return (
     <>
       <div className="lg:hidden w-full overflow-x-auto [&::-webkit-scrollbar]:hidden -mx-4 md:mx-0 px-4 md:px-0">
@@ -56,7 +55,7 @@ export const SettingsSidebar = ({
                 )}
               >
                 <Icon className="w-4.5 h-4.5 shrink-0" />
-                <span className="font-poppins">{tab.label}</span>
+                <span className="font-poppins">{t(tab.labelKey)}</span>
                 <div
                   className={cn(
                     "absolute bottom-0 left-0 right-0 h-[3px] bg-[#066EFF] rounded-full transition-all duration-300 ease-out transform",
@@ -99,7 +98,7 @@ export const SettingsSidebar = ({
                   />
                 </div>
                 <span className="text-[15px] font-medium font-poppins">
-                  {tab.label}
+                  {t(tab.labelKey)}
                 </span>
               </button>
             );

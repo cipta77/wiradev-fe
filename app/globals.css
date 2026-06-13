@@ -121,6 +121,59 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+/*
+ * Dark-mode surface overrides.
+ *
+ * The dashboard UI was built with hardcoded light utilities (bg-white,
+ * bg-[#F8FAFC], text-slate-*, ...) rather than theme tokens, so toggling the
+ * `.dark` class alone wouldn't visibly change it. These higher-specificity
+ * overrides remap the common surfaces/text/borders used across the app so the
+ * Light / Dark / System switch in Settings is genuinely functional. Brand
+ * colors (blue gradients, accent blue, status colors) are intentionally left
+ * untouched.
+ */
+.dark {
+  --surface-1: #0f172a; /* page background */
+  --surface-2: #1e293b; /* cards / panels */
+  --surface-3: #334155; /* inputs / subtle fills */
+  --text-strong: #f1f5f9;
+  --text-muted: #94a3b8;
+  --line: #334155;
+}
+
+.dark .bg-white,
+.dark .bg-\[\#F8FAFC\],
+.dark .bg-\[\#F5F7FA\] {
+  background-color: var(--surface-2) !important;
+}
+.dark .bg-\[\#F8FAFC\] {
+  background-color: var(--surface-1) !important;
+}
+.dark .bg-slate-50,
+.dark .bg-slate-100,
+.dark .bg-slate-100\/80,
+.dark .bg-blue-50 {
+  background-color: var(--surface-3) !important;
+}
+.dark .text-slate-900,
+.dark .text-slate-800,
+.dark .text-slate-750,
+.dark .text-slate-700 {
+  color: var(--text-strong) !important;
+}
+.dark .text-slate-600,
+.dark .text-slate-500,
+.dark .text-slate-400,
+.dark .text-slate-300 {
+  color: var(--text-muted) !important;
+}
+.dark .border-slate-100,
+.dark .border-slate-200,
+.dark .border-\[\#F1F5F9\],
+.dark .border-\[\#E8ECF0\] {
+  border-color: var(--line) !important;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

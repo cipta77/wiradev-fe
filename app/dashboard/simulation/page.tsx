@@ -35,10 +35,10 @@ export default function CareerSimulationPage() {
         </div>
       </div>
 
-      <div className="px-4 md:px-8 lg:px-10 pt-2 md:pt-0 flex flex-col">
+      <div className="px-4 md:px-8 lg:px-10 pt-2 md:pt-0 pb-6 md:pb-8 flex flex-col flex-1 min-h-0">
         {activeTab === "recruiter" ? (
-          <div className="flex flex-col">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-8">
+          <div className="flex flex-col flex-1 min-h-0">
+            <div className="grid grid-cols-1 lg:grid-cols-12 lg:grid-rows-1 gap-4 md:gap-8 flex-1 min-h-0">
               <div className="lg:col-span-4 h-fit lg:h-full min-h-0 order-2 lg:order-1 overflow-y-auto no-scrollbar">
                 <CompanyList
                   activeId={activeCompanyId}
@@ -46,27 +46,25 @@ export default function CareerSimulationPage() {
                 />
               </div>
 
-              <div className="lg:col-span-8 h-[480px] order-1 lg:order-2">
+              <div className="lg:col-span-8 h-[480px] lg:h-full lg:min-h-[480px] order-1 lg:order-2">
                 <ChatSimulation companyName={getCompanyName(activeCompanyId)} />
               </div>
             </div>
-            <div className="h-6 md:h-10 w-full" />
           </div>
         ) : activeTab === "salary" ? (
-          <div className="flex flex-col">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-8">
+          <div className="flex flex-col flex-1 min-h-0">
+            <div className="grid grid-cols-1 lg:grid-cols-12 lg:grid-rows-1 gap-4 md:gap-8 flex-1 min-h-0">
               <div className="lg:col-span-4 h-fit lg:h-full min-h-0 order-2 lg:order-1">
                 <ScenarioCard />
               </div>
 
-              <div className="lg:col-span-8 h-[480px] order-1 lg:order-2">
+              <div className="lg:col-span-8 h-[480px] lg:h-full lg:min-h-[480px] order-1 lg:order-2">
                 <ChatSimulation
                   type="salary"
                   companyName=""
                 />
               </div>
             </div>
-            <div className="h-6 md:h-10 w-full" />
           </div>
         ) : activeTab === "jobdesk" ? (
           <div className="flex-1 flex flex-col">

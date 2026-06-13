@@ -1,15 +1,42 @@
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
-async function requestApi(path: string, options?: RequestInit) {
-  const response = await fetch(`${API_BASE_URL}${path}`, {
+async function rawFetch(path: string, options?: RequestInit) {
+  const isFormData =
+    typeof FormData !== "undefined" && options?.body instanceof FormData;
+  return fetch(`${API_BASE_URL}${path}`, {
     ...options,
     credentials: "include",
     headers: {
-      "Content-Type": "application/json",
+      // Don't force JSON content-type for multipart uploads.
+      ...(isFormData ? {} : { "Content-Type": "application/json" }),
       ...(options?.headers || {}),
     },
   });
+}
+
+async function requestApi(path: string, options?: RequestInit) {
+  let response = await rawFetch(path, options);
+
+  // Access tokens expire after 15 minutes. When that happens the API returns
+  // 401; transparently refresh the session once and retry the request so data
+  // calls (analytics, skill-gap, market-demand, etc.) don't fail with
+  // "Unauthorized" while the user is still logged in.
+  if (response.status === 401 && path !== "/api/auth/refresh") {
+    try {
+      const refreshResponse = await fetch(`${API_BASE_URL}/api/auth/refresh`, {
+        method: "POST",
+        credentials: "include",
+      });
+      if (refreshResponse.ok) {
+        response = await rawFetch(path, options);
+      } else if (typeof window !== "undefined") {
+        window.location.href = "/signin";
+      }
+    } catch (e) {
+      console.error("Token refresh failed", e);
+    }
+  }
 
   const data = await response.json().catch(() => null);
 

@@ -1,42 +1,52 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ChevronDown, Sun, Moon, Monitor } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTheme } from "next-themes";
+import { useLanguage, LanguageId } from "@/lib/i18n";
 
-const languages = [
+const languages: { id: LanguageId; label: string; flag: string }[] = [
   { id: "en-us", label: "English (US)", flag: "🇺🇸" },
   { id: "id", label: "Bahasa Indonesia", flag: "🇮🇩" },
   { id: "en-uk", label: "English (UK)", flag: "🇬🇧" },
   { id: "jp", label: "Japanese", flag: "🇯🇵" },
 ];
 
-const themes = [
-  { id: "light", label: "Light", icon: Sun },
-  { id: "dark", label: "Dark", icon: Moon },
-  { id: "system", label: "System", icon: Monitor },
-];
-
 export const AppearanceSettings = () => {
-  const [selectedLang, setSelectedLang] = useState(languages[0]);
+  const { lang, setLang, t } = useLanguage();
+  const { theme, setTheme } = useTheme();
   const [isLangOpen, setIsLangOpen] = useState(false);
-  const [activeTheme, setActiveTheme] = useState("light");
+  const [mounted, setMounted] = useState(false);
+
+  // Avoid hydration mismatch: theme is only known on the client.
+  useEffect(() => setMounted(true), []);
+
+  const themes = [
+    { id: "light", label: t("theme.light"), icon: Sun },
+    { id: "dark", label: t("theme.dark"), icon: Moon },
+    { id: "system", label: t("theme.system"), icon: Monitor },
+  ];
+
+  const activeTheme = mounted ? theme || "system" : "light";
+  const selectedLang =
+    languages.find((l) => l.id === lang) || languages[0];
 
   return (
     <div className="p-5 md:p-8 space-y-5 md:space-y-7 w-full">
       <div className="space-y-1">
         <h2 className="text-[18px] md:text-[20px] font-semibold text-slate-900 font-poppins">
-          Language & Appearance
+          {t("appearance.title")}
         </h2>
         <p className="text-[13px] md:text-[14px] text-slate-400 font-normal font-poppins">
-          Customize your experience
+          {t("appearance.subtitle")}
         </p>
       </div>
 
       <div className="space-y-4 md:space-y-5 w-full">
         <div className="space-y-2 relative">
           <label className="text-[13px] font-semibold text-slate-700 font-poppins block px-0.5">
-            Language
+            {t("appearance.language")}
           </label>
           <button
             onClick={() => setIsLangOpen(!isLangOpen)}
@@ -66,7 +76,7 @@ export const AppearanceSettings = () => {
                   <button
                     key={lang.id}
                     onClick={() => {
-                      setSelectedLang(lang);
+                      setLang(lang.id);
                       setIsLangOpen(false);
                     }}
                     className={cn(
@@ -94,7 +104,7 @@ export const AppearanceSettings = () => {
 
         <div className="space-y-2 pt-2">
           <label className="text-[14px] font-semibold text-slate-700 font-poppins px-0.5 block">
-            Theme
+            {t("appearance.theme")}
           </label>
           <div className="relative flex bg-slate-100/80 border-[0.8px] border-slate-200 p-1 rounded-[16px] w-full max-w-[360px] h-12">
             <div
@@ -118,7 +128,7 @@ export const AppearanceSettings = () => {
               return (
                 <button
                   key={theme.id}
-                  onClick={() => setActiveTheme(theme.id)}
+                  onClick={() => setTheme(theme.id)}
                   className={cn(
                     "relative z-10 flex-1 flex items-center justify-center gap-2 md:gap-2.5 h-full rounded-[12px] transition-all duration-300 font-medium font-poppins text-[13px] md:text-[14px] cursor-pointer whitespace-nowrap",
                     isActive

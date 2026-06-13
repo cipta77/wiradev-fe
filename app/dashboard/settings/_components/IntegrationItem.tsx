@@ -9,6 +9,7 @@ interface IntegrationItemProps {
   status: string;
   statusText: string;
   indicatorColor: string;
+  onClick?: () => void;
 }
 
 export const IntegrationItem = ({
@@ -18,9 +19,21 @@ export const IntegrationItem = ({
   status,
   statusText,
   indicatorColor,
+  onClick,
 }: IntegrationItemProps) => {
+  const isConnected = status === "connected";
   return (
-    <div className="p-5 md:p-6 bg-white rounded-[22px] border border-slate-100 flex items-center justify-between group hover:border-blue-200 transition-all hover:shadow-lg hover:shadow-slate-200/20 cursor-pointer">
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={onClick}
+      onKeyDown={(e) => {
+        if (onClick && (e.key === "Enter" || e.key === " ")) {
+          e.preventDefault();
+          onClick();
+        }
+      }}
+      className="p-5 md:p-6 bg-white rounded-[22px] border border-slate-100 flex items-center justify-between group hover:border-blue-200 transition-all hover:shadow-lg hover:shadow-slate-200/20 cursor-pointer">
       <div className="flex items-center gap-5">
         <div className="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-slate-50 flex items-center justify-center shrink-0 border border-slate-50 group-hover:bg-white group-hover:shadow-inner transition-all">
           <Icon className="w-8 h-8 md:w-9 md:h-9 text-slate-800" />
@@ -49,9 +62,16 @@ export const IntegrationItem = ({
         </div>
       </div>
 
-      <button className="text-slate-300 group-hover:text-[#066EFF] group-hover:translate-x-1 transition-all">
-        <ChevronRight className="w-6 h-6" />
-      </button>
+      <div className="flex items-center gap-2 shrink-0">
+        {!isConnected && (
+          <span className="hidden sm:inline text-[13px] font-semibold text-slate-400 group-hover:text-[#066EFF] transition-colors">
+            Connect
+          </span>
+        )}
+        <span className="text-slate-300 group-hover:text-[#066EFF] group-hover:translate-x-1 transition-all">
+          <ChevronRight className="w-6 h-6" />
+        </span>
+      </div>
     </div>
   );
 };

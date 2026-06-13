@@ -31,7 +31,13 @@ async function apiFetch<T>(path: string, options: RequestOptions = {}): Promise<
     credentials: "include", 
   });
 
-  if (response.status === 401 && useAuth && path !== "/api/auth/me") {
+  const isMeCheck = path === "/api/auth/me";
+
+  // On 401, transparently refresh the (15-minute) access token once and retry.
+  // This also covers the initial /api/auth/me bootstrap call: previously /me
+  // skipped the refresh and immediately returned null, logging the user out as
+  // soon as the access token expired even though the refresh token was valid.
+  if (response.status === 401 && useAuth && path !== "/api/auth/refresh") {
     try {
       const refreshResponse = await fetch(`${BASE_URL}/api/auth/refresh`, {
         method: "POST",
@@ -44,17 +50,18 @@ async function apiFetch<T>(path: string, options: RequestOptions = {}): Promise<
           headers,
           credentials: "include",
         });
-      } else {
-        if (typeof window !== "undefined") {
-          window.location.href = "/signin";
-        }
+      } else if (!isMeCheck && typeof window !== "undefined") {
+        // Refresh genuinely failed (expired/invalid session): send the user to
+        // sign-in. For the /me bootstrap we stay silent and fall through to the
+        // null result below so the public/landing pages still render.
+        window.location.href = "/signin";
       }
     } catch (e) {
       console.error("Token refresh failed", e);
     }
   }
 
-  if (response.status === 401 && path === "/api/auth/me") {
+  if (response.status === 401 && isMeCheck) {
     return { result: null } as any;
   }
 

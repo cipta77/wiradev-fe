@@ -17,22 +17,23 @@ import {
 import { cn } from "@/lib/utils";
 import { SheetClose } from "@/components/ui/sheet";
 import { useAuth } from "@/lib/auth-context";
+import { useLanguage } from "@/lib/i18n";
 
 const menuItems = [
-  { icon: Home, label: "Home", href: "/dashboard" },
+  { icon: Home, labelKey: "nav.home", href: "/dashboard" },
   {
     icon: ShieldCheck,
-    label: "Readiness Center",
+    labelKey: "nav.readiness",
     href: "/dashboard/readiness",
   },
-  { icon: Code2, label: "Development Hub", href: "/dashboard/dev-hub" },
+  { icon: Code2, labelKey: "nav.devhub", href: "/dashboard/dev-hub" },
   {
     icon: Briefcase,
-    label: "Career Simulation",
+    labelKey: "nav.simulation",
     href: "/dashboard/simulation",
   },
-  { icon: User, label: "Profile", href: "/dashboard/profile" },
-  { icon: Settings, label: "Settings", href: "/dashboard/settings" },
+  { icon: User, labelKey: "nav.profile", href: "/dashboard/profile" },
+  { icon: Settings, labelKey: "nav.settings", href: "/dashboard/settings" },
 ];
 
 export const DashboardSidebar = ({
@@ -46,6 +47,7 @@ export const DashboardSidebar = ({
 }) => {
   const pathname = usePathname();
   const { logout } = useAuth();
+  const { t } = useLanguage();
 
   const handleLogout = () => {
     logout();
@@ -88,7 +90,7 @@ export const DashboardSidebar = ({
           const isActive = pathname === item.href;
           const content = (
             <Link
-              key={item.label}
+              key={item.href}
               href={item.href}
               className={cn(
                 "flex items-center gap-3.5 rounded-[12px] transition-all duration-200 group",
@@ -107,16 +109,16 @@ export const DashboardSidebar = ({
                   isCollapsed && "scale-105"
                 )}
               />
-              {!isCollapsed && <span className="text-[14px]">{item.label}</span>}
+              {!isCollapsed && <span className="text-[14px]">{t(item.labelKey)}</span>}
             </Link>
           );
 
           return isMobile ? (
-            <SheetClose asChild key={item.label}>
+            <SheetClose asChild key={item.href}>
               {content}
             </SheetClose>
           ) : (
-            <React.Fragment key={item.label}>{content}</React.Fragment>
+            <React.Fragment key={item.href}>{content}</React.Fragment>
           );
         })}
       </nav>
@@ -129,7 +131,7 @@ export const DashboardSidebar = ({
               className="flex items-center gap-3.5 px-3.5 py-2.5 w-full rounded-[12px] text-slate-400 hover:text-red-500 hover:bg-red-50 transition-all duration-200 group cursor-pointer"
             >
               <LogOut className="w-4.5 h-4.5" />
-              <span className="text-[14px] font-medium">Log Out</span>
+              <span className="text-[14px] font-medium">{t("nav.logout")}</span>
             </button>
           </SheetClose>
         ) : (
@@ -141,7 +143,7 @@ export const DashboardSidebar = ({
             )}
           >
             <LogOut className="w-4.5 h-4.5" />
-            {!isCollapsed && <span className="text-[14px] font-medium">Log Out</span>}
+            {!isCollapsed && <span className="text-[14px] font-medium">{t("nav.logout")}</span>}
           </button>
         )}
       </div>

@@ -9,30 +9,32 @@ import { AppearanceSettings } from "./_components/AppearanceSettings";
 import { IntegrationSettings } from "./_components/IntegrationSettings";
 import { SupportSettings } from "./_components/SupportSettings";
 import { SettingsEmptyState } from "./_components/SettingsEmptyState";
+import { useLanguage } from "@/lib/i18n";
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState("account");
+  const { t } = useLanguage();
 
   const getTabLabel = (id: string) => {
-    const labels: Record<string, string> = {
-      account: "Account",
-      security: "Password & Security",
-      notifications: "Notifications",
-      appearance: "Language & Appearance",
-      integrations: "Integrations",
-      support: "Help & Support",
+    const keys: Record<string, string> = {
+      account: "settings.account",
+      security: "settings.security",
+      notifications: "settings.notifications",
+      appearance: "settings.appearance",
+      integrations: "settings.integrations",
+      support: "settings.support",
     };
-    return labels[id] || id;
+    return keys[id] ? t(keys[id]) : id;
   };
 
   return (
     <div className="flex flex-col h-full overflow-y-auto bg-[#F8FAFC]">
       <div className="p-4 md:p-6 lg:p-8 lg:pb-5 space-y-2 md:space-y-4">
         <h1 className="text-[24px] md:text-[28px] font-semibold text-slate-900 font-poppins">
-          Settings
+          {t("settings.title")}
         </h1>
         <p className="text-[14px] md:text-[15px] text-slate-400 font-normal font-poppins">
-          Manage your account settings and preferences.
+          {t("settings.subtitle")}
         </p>
       </div>
 

@@ -31,6 +31,7 @@ const QuizView: React.FC<QuizViewProps> = ({ onComplete, onBack }) => {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [elapsed, setElapsed] = useState(0);
   const [fetching, setFetching] = useState(true);
+  const [reviewing, setReviewing] = useState(false);
 
 interface GetQuestionsResponse {
   success: boolean;
@@ -86,28 +87,42 @@ interface GetQuestionsResponse {
   const totalTasks = categories.reduce((acc, s) => acc + (s.questions?.length || 0), 0);
   const completedCount = Object.keys(answers).length;
 
+  const scrollToTop = () => {
+    const scrollEl = document.getElementById("readiness-scroll");
+    if (scrollEl) scrollEl.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   const handleNextSection = async () => {
     if (activeSectionIdx < categories.length - 1) {
       setActiveSectionIdx((p) => p + 1);
-      const scrollEl = document.getElementById("readiness-scroll");
-      if (scrollEl) {
-        scrollEl.scrollTo({ top: 0, behavior: "smooth" });
-      }
+      scrollToTop();
     } else {
-      // Process submission
-      const formattedAnswers = Object.entries(answers).map(([qid, val]) => ({
-        question_id: qid,
-        user_answer: val,
-      }));
-
-      try {
-        const responseData = await submitAssessment(formattedAnswers, elapsed);
-        const result = responseData?.result || responseData;
-        onComplete(answers, elapsed, result);
-      } catch (err) {
-        console.error("Submission failed:", err);
-      }
+      // Last section: let the user review their answers before submitting.
+      setReviewing(true);
+      scrollToTop();
     }
+  };
+
+  const handleSubmit = async () => {
+    const formattedAnswers = Object.entries(answers).map(([qid, val]) => ({
+      question_id: qid,
+      user_answer: val,
+    }));
+
+    try {
+      const responseData = await submitAssessment(formattedAnswers, elapsed);
+      const result = responseData?.result || responseData;
+      onComplete(answers, elapsed, result);
+    } catch (err) {
+      console.error("Submission failed:", err);
+    }
+  };
+
+  // Jump back to a specific section to change an answer.
+  const handleEditSection = (idx: number) => {
+    setReviewing(false);
+    setActiveSectionIdx(idx);
+    scrollToTop();
   };
 
   const handlePrevSection = () => {
@@ -125,6 +140,116 @@ interface GetQuestionsResponse {
   const handleOptionSelect = (taskId: string, optionId: string) => {
     setAnswers((prev) => ({ ...prev, [taskId]: optionId }));
   };
+
+  // ---- Review step: show all answers before final submission (Note 8) ----
+  if (reviewing) {
+    const answeredCount = completedCount;
+    const unansweredCount = totalTasks - answeredCount;
+
+    return (
+      <div className="w-full max-w-[850px] mx-auto animate-in fade-in duration-500 pb-12">
+        <QuizHeader
+          onBack={() => setReviewing(false)}
+          elapsedTime={formatTime(elapsed)}
+          progress={`${answeredCount}/${totalTasks}`}
+          activeColor="blue"
+        />
+
+        <div className="bg-white rounded-[20px] border border-slate-100 shadow-sm p-5 md:p-7 mb-5">
+          <h2 className="text-[18px] md:text-[20px] font-bold text-slate-800 font-poppins">
+            Review Your Answers
+          </h2>
+          <p className="text-[13px] text-slate-400 font-poppins mt-1">
+            Double-check your responses before submitting. You answered{" "}
+            <span className="font-semibold text-slate-600">{answeredCount}</span>{" "}
+            of {totalTasks} questions.
+            {unansweredCount > 0 && (
+              <span className="text-orange-500 font-semibold">
+                {" "}
+                {unansweredCount} still unanswered.
+              </span>
+            )}
+          </p>
+        </div>
+
+        <div className="flex flex-col gap-4">
+          {categories.map((section, sIdx) => (
+            <div
+              key={section.id}
+              className="bg-white rounded-[16px] border border-slate-100 shadow-sm overflow-hidden"
+            >
+              <div className="flex items-center justify-between px-5 py-3 border-b border-slate-50 bg-[#F8FAFC]/50">
+                <h3 className="text-[14px] font-bold text-slate-700 font-poppins">
+                  {section.name || (section as { title?: string }).title}
+                </h3>
+                <button
+                  onClick={() => handleEditSection(sIdx)}
+                  className="text-[12px] font-semibold text-[#066EFF] hover:underline cursor-pointer"
+                >
+                  Edit
+                </button>
+              </div>
+              <div className="divide-y divide-slate-50">
+                {(section.questions || []).map((q, qIdx) => {
+                  const selectedId = answers[q.id];
+                  const selectedOpt = (q.options || []).find(
+                    (o) => o.id === selectedId,
+                  );
+                  const answerLabel = selectedOpt
+                    ? selectedOpt.text
+                    : selectedId || null;
+                  return (
+                    <div key={q.id} className="px-5 py-3">
+                      <p className="text-[13px] font-medium text-slate-700 font-poppins mb-1">
+                        <span className="text-slate-400 mr-1">{qIdx + 1}.</span>
+                        {q.question_text}
+                      </p>
+                      {answerLabel ? (
+                        <p className="text-[13px] text-emerald-600 font-semibold font-poppins flex items-start gap-1.5">
+                          <span className="text-slate-400 font-normal">
+                            Your answer:
+                          </span>
+                          {answerLabel}
+                        </p>
+                      ) : (
+                        <p className="text-[13px] text-orange-500 font-semibold font-poppins">
+                          Not answered yet
+                        </p>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-8 flex gap-3">
+          <button
+            onClick={() => setReviewing(false)}
+            disabled={loading}
+            className="flex-1 bg-[#F8FAFC] text-slate-500 py-3 rounded-[16px] font-semibold text-[14px] flex items-center justify-center gap-2 border border-slate-100 hover:bg-slate-50 transition-all active:scale-[0.98] cursor-pointer disabled:opacity-55"
+          >
+            Back to Edit
+          </button>
+          <button
+            onClick={handleSubmit}
+            disabled={loading}
+            className="flex-1 bg-[#066EFF] text-white py-3 rounded-[16px] font-semibold text-[14px] flex items-center justify-center gap-2 hover:bg-[#0052cc] transition-all active:scale-[0.98] shadow-lg shadow-blue-500/20 cursor-pointer disabled:opacity-55"
+          >
+            {loading ? (
+              <Loader2 className="w-5 h-5 text-white animate-spin" />
+            ) : (
+              <>
+                <span>Submit Assessment</span>
+                <ArrowRight className="w-4 h-4" />
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const progressPercentage = ((activeSectionIdx + 1) / categories.length) * 100;
   const activeColor = currentSection.color || "blue";
