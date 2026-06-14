@@ -30,25 +30,64 @@ import {
 // the interview auto-ends and is evaluated. The user can also end it early.
 const INTERVIEW_DURATION_SECONDS = 30 * 60;
 
-const BotMessage = ({ text }: { text: string }) => (
+// Format an ISO timestamp into a HH:MM clock label, matching the mobile bubble.
+const formatClock = (iso?: string) => {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return "";
+  return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false });
+};
+
+// Blue voice-signal bars shown beside bot bubbles — mirrors the mobile
+// VoiceChatBubble waveform indicator.
+const VoiceBars = () => (
+  <div className="flex items-center justify-center gap-[2px] w-7 h-7 rounded-full bg-[#066EFF]/10 shrink-0">
+    {[12, 18, 10, 14].map((h, i) => (
+      <span
+        key={i}
+        className="w-[2.5px] bg-[#066EFF] rounded-full"
+        style={{ height: `${h}px` }}
+      />
+    ))}
+  </div>
+);
+
+const BotMessage = ({ text, createdAt }: { text: string; createdAt?: string }) => (
   <div className="flex items-start gap-2 max-w-[90%] md:max-w-[85%] animate-in fade-in slide-in-from-left-2 duration-350">
     <div className="w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 shrink-0 border-[0.8px] border-slate-200/50">
       <Bot className="w-3.5 h-3.5" />
     </div>
-    <div className="bg-slate-50 p-3 rounded-[16px] rounded-tl-none border border-[#F1F5F9] shadow-xs">
-      <p className="text-[13px] text-slate-700 leading-relaxed font-poppins font-medium whitespace-pre-line">
-        {text}
-      </p>
+    <div className="flex flex-col min-w-0">
+      <div className="flex items-start gap-2">
+        <div className="bg-slate-50 p-3 rounded-[16px] rounded-tl-none border border-[#F1F5F9] shadow-xs">
+          <p className="text-[13px] text-slate-700 leading-relaxed font-poppins font-medium whitespace-pre-line">
+            {text}
+          </p>
+        </div>
+        <VoiceBars />
+      </div>
+      {createdAt && (
+        <span className="text-[11px] text-slate-400 font-poppins mt-1 ml-1">
+          {formatClock(createdAt)}
+        </span>
+      )}
     </div>
   </div>
 );
 
-const UserMessage = ({ text }: { text: string }) => (
+const UserMessage = ({ text, createdAt }: { text: string; createdAt?: string }) => (
   <div className="flex items-start gap-2 max-w-[90%] md:max-w-[85%] ml-auto justify-end animate-in fade-in slide-in-from-right-2 duration-350">
-    <div className="bg-[#066EFF] p-3 rounded-[16px] rounded-tr-none text-white max-w-full shadow-sm shadow-blue-500/10">
-      <p className="text-[13px] leading-relaxed font-poppins font-medium whitespace-pre-line">
-        {text}
-      </p>
+    <div className="flex flex-col items-end min-w-0">
+      <div className="bg-[#066EFF] p-3 rounded-[16px] rounded-tr-none text-white max-w-full shadow-sm shadow-blue-500/10">
+        <p className="text-[13px] leading-relaxed font-poppins font-medium whitespace-pre-line">
+          {text}
+        </p>
+      </div>
+      {createdAt && (
+        <span className="text-[11px] text-slate-400 font-poppins mt-1 mr-1">
+          {formatClock(createdAt)}
+        </span>
+      )}
     </div>
     <div className="w-7 h-7 rounded-full bg-[#066EFF]/10 flex items-center justify-center text-[#066EFF] shrink-0 border-[0.8px] border-blue-500/10">
       <User className="w-3.5 h-3.5" />
@@ -610,9 +649,9 @@ export const ChatSimulation = ({
           >
             {messages.map((msg) =>
               msg.sender === "bot" ? (
-                <BotMessage key={msg.id} text={msg.text} />
+                <BotMessage key={msg.id} text={msg.text} createdAt={msg.created_at} />
               ) : (
-                <UserMessage key={msg.id} text={msg.text} />
+                <UserMessage key={msg.id} text={msg.text} createdAt={msg.created_at} />
               ),
             )}
 
