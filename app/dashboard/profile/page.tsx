@@ -3,6 +3,7 @@
 import React from "react";
 import { ProfileBanner } from "./_components/ProfileBanner";
 import { SkillDetails } from "./_components/SkillDetails";
+import { ValidatedCompetitions } from "./_components/ValidatedCompetitions";
 import { IntegrationsCard } from "./_components/IntegrationsCard";
 import { DocumentsCard } from "./_components/DocumentsCard";
 
@@ -14,6 +15,7 @@ export default function ProfilePage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8 items-start">
           <div className="lg:col-span-8 space-y-6 md:space-y-7">
+            <ValidatedCompetitions />
             <SkillDetails />
           </div>
 
