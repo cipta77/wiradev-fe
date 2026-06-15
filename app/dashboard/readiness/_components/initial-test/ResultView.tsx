@@ -5,12 +5,36 @@ import { useRouter } from "next/navigation";
 import { Award, Clock, ArrowRight, CheckCircle2, XCircle, Zap, ShieldAlert, Target } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+interface AssessmentAnswerReview {
+  question_id: string;
+  question_text: string;
+  question_type: string;
+  category_name?: string | null;
+  options: { id: string; text: string }[];
+  user_answer: string;
+  correct_answer: string;
+  is_correct: boolean;
+  explanation?: string | null;
+}
+
 interface AssessmentSubmitResult {
   assessment_id: string;
   total_questions: number;
   correct_answers: number;
   score_percentage: number;
+  results?: AssessmentAnswerReview[];
 }
+
+// Resolve a stored answer id (e.g. "A", "yes") to its human-readable label.
+const labelFor = (review: AssessmentAnswerReview, value: string): string => {
+  if (!value) return "—";
+  if (review.question_type === "yes_no") {
+    if (value.toLowerCase() === "yes") return "Yes";
+    if (value.toLowerCase() === "no") return "No";
+  }
+  const opt = (review.options || []).find((o) => o.id === value);
+  return opt ? opt.text : value;
+};
 
 interface ResultViewProps {
   answers: Record<string, string>;
@@ -55,6 +79,8 @@ const ResultView: React.FC<ResultViewProps> = ({ answers, timeTaken, onTabChange
 
   const feedbackKey = scorePercentage >= 75 ? "high" : scorePercentage >= 45 ? "medium" : "low";
   const activeFeedback = feedbacks[feedbackKey];
+
+  const reviews = responseResult?.results ?? [];
 
   // Score bar/ring color scales with the result: red → orange → yellow → green
   // instead of always showing red regardless of how the user performed.
@@ -129,6 +155,67 @@ const ResultView: React.FC<ResultViewProps> = ({ answers, timeTaken, onTabChange
               <span className="text-slate-400 text-[11px] font-semibold font-poppins mt-0.5">Task Completion</span>
             </div>
           </div>
+
+          {/* Answer Review Section — lets the user see each answer they gave,
+              whether it was correct, the right answer and an explanation. */}
+          {reviews.length > 0 && (
+            <div className="space-y-3 mb-10">
+              <h4 className="text-[13px] font-semibold text-slate-900 font-poppins mb-3">Review Your Answers</h4>
+              <div className="flex flex-col gap-3">
+                {reviews.map((r, idx) => {
+                  const userLabel = labelFor(r, r.user_answer);
+                  const correctLabel = labelFor(r, r.correct_answer);
+                  return (
+                    <div
+                      key={r.question_id}
+                      className={cn(
+                        "rounded-[16px] border p-4",
+                        r.is_correct
+                          ? "bg-emerald-50/40 border-emerald-100"
+                          : "bg-red-50/40 border-red-100",
+                      )}
+                    >
+                      <div className="flex items-start gap-2.5">
+                        {r.is_correct ? (
+                          <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+                        ) : (
+                          <XCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
+                        )}
+                        <div className="flex-1 min-w-0">
+                          {r.category_name && (
+                            <span className="text-[10px] font-bold text-slate-400 font-poppins uppercase tracking-wider">
+                              {r.category_name}
+                            </span>
+                          )}
+                          <p className="text-[13px] font-semibold text-slate-800 font-poppins mb-2">
+                            <span className="text-slate-400 mr-1">{idx + 1}.</span>
+                            {r.question_text}
+                          </p>
+                          <p className="text-[12px] font-poppins">
+                            <span className="text-slate-400">Your answer: </span>
+                            <span className={cn("font-semibold", r.is_correct ? "text-emerald-600" : "text-red-600")}>
+                              {userLabel}
+                            </span>
+                          </p>
+                          {!r.is_correct && (
+                            <p className="text-[12px] font-poppins mt-0.5">
+                              <span className="text-slate-400">Correct answer: </span>
+                              <span className="font-semibold text-emerald-600">{correctLabel}</span>
+                            </p>
+                          )}
+                          {r.explanation && (
+                            <p className="text-[11px] text-slate-500 font-poppins mt-1.5 leading-relaxed">
+                              {r.explanation}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
           {/* Detailed Review Section */}
           <div className="space-y-4">
