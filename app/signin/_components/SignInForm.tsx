@@ -141,7 +141,7 @@ export default function SignInForm() {
               Remember me
             </label>
           </div>
-          <Link href="#" onClick={(e) => { e.preventDefault(); toast.info("Forgot Password flow is simulated."); }} className="text-[#066EFF] hover:underline">
+          <Link href="/forgot-password" className="text-[#066EFF] hover:underline">
             Forgot Password?
           </Link>
         </div>
