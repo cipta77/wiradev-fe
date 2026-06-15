@@ -1,8 +1,7 @@
 "use client";
 
-import React from "react";
 import { cn } from "@/lib/utils";
-import { MessageSquare, DollarSign, FileSearch } from "lucide-react";
+import { MessageSquare, DollarSign, FileSearch, Video } from "lucide-react";
 
 interface SimulationTabsProps {
   activeTab: string;
@@ -12,6 +11,7 @@ interface SimulationTabsProps {
 const tabs = [
   { id: "recruiter", label: "Recruiter Simulation", icon: MessageSquare },
   { id: "salary", label: "Salary Negotiation", icon: DollarSign },
+  { id: "english", label: "English Interview", icon: Video },
   { id: "jobdesk", label: "Jobdesk Analyzer", icon: FileSearch },
 ];
 

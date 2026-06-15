@@ -359,11 +359,12 @@ export interface SimulationMessage {
 
 export async function startSimulation(
   type: "recruiter" | "salary",
-  companyName?: string
+  companyName?: string,
+  role?: string
 ): Promise<{ simulation: SimulationSession; firstMessage: SimulationMessage }> {
   const responseData = await requestApi("/api/simulations/start", {
     method: "POST",
-    body: JSON.stringify({ type, company_name: companyName }),
+    body: JSON.stringify({ type, company_name: companyName, role }),
   });
   return responseData?.result ?? responseData;
 }

@@ -7,6 +7,7 @@ import { CompanyList } from "./_components/CompanyList";
 import { ChatSimulation } from "./_components/ChatSimulation";
 import { ScenarioCard } from "./_components/ScenarioCard";
 import { JobdeskAnalyzer } from "./_components/JobdeskAnalyzer";
+import { EnglishInterviewSimulation } from "./_components/EnglishInterviewSimulation";
 
 export default function CareerSimulationPage() {
   const [activeTab, setActiveTab] = useState("recruiter");
@@ -65,6 +66,10 @@ export default function CareerSimulationPage() {
                 />
               </div>
             </div>
+          </div>
+        ) : activeTab === "english" ? (
+          <div className="flex-1 flex flex-col min-h-0">
+            <EnglishInterviewSimulation />
           </div>
         ) : activeTab === "jobdesk" ? (
           <div className="flex-1 flex flex-col">
