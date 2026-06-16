@@ -76,8 +76,7 @@ export const CompanyList = ({
 }) => {
   return (
     <div
-      className="bg-white rounded-[24px] flex flex-col h-full overflow-hidden transition-all hover:shadow-xl hover:shadow-slate-200/20"
-      style={{ border: "1.2px solid #F1F5F9" }}
+      className="bg-white rounded-[24px] flex flex-col h-full overflow-hidden transition-all hover:shadow-xl hover:shadow-slate-200/20 border border-[#F1F5F9]"
     >
       <div className="px-4 py-3 border-b border-[#F1F5F9] text-left bg-slate-50/50">
         <h3 className="text-[14px] font-semibold text-slate-800 font-poppins">

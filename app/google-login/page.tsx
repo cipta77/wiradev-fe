@@ -12,6 +12,7 @@ function GoogleLoginContent() {
   const [status, setStatus] = useState("");
   const [statusType, setStatusType] = useState<"" | "error" | "success">("");
   const [isLoading, setIsLoading] = useState(false);
+  const [deepLinkUrl, setDeepLinkUrl] = useState("");
   const initialized = useRef(false);
 
   const clientId = "159334240812-3k5m6m19u2h5uljs0t5rckauajkovgel.apps.googleusercontent.com";
@@ -89,20 +90,25 @@ function GoogleLoginContent() {
 
       // 3. Perform redirect
       if (redirectUriParam) {
-        setTimeout(() => {
-          if (redirectUriParam.includes("/#/oauth-callback") || redirectUriParam.includes("/oauth-callback?")) {
-            const separator = redirectUriParam.includes("?") ? "&" : "?";
-            const tokens = data.result.tokens;
-            window.location.href = `${redirectUriParam}${separator}access_token=${encodeURIComponent(tokens.accessToken)}&refresh_token=${encodeURIComponent(tokens.refreshToken)}`;
-          } else {
-            // Web Next.js callback (expects hash id_token)
+        if (redirectUriParam.startsWith("wirapath://") || redirectUriParam.includes("/#/oauth-callback") || redirectUriParam.includes("/oauth-callback?")) {
+          const separator = redirectUriParam.includes("?") ? "&" : "?";
+          const tokens = data.result.tokens;
+          const deepLink = `${redirectUriParam}${separator}access_token=${encodeURIComponent(tokens.accessToken)}&refresh_token=${encodeURIComponent(tokens.refreshToken)}`;
+          setDeepLinkUrl(deepLink);
+          setTimeout(() => {
+            window.location.href = deepLink;
+          }, 1000);
+        } else {
+          // Web Next.js callback (expects hash id_token)
+          setTimeout(() => {
             window.location.href = `${redirectUriParam}#id_token=${encodeURIComponent(idToken)}`;
-          }
-        }, 1000);
+          }, 1000);
+        }
       } else {
         // Redirect back to mobile app via deep link
         const tokens = data.result.tokens;
         const deepLink = `wirapath://oauth-callback?access_token=${encodeURIComponent(tokens.accessToken)}&refresh_token=${encodeURIComponent(tokens.refreshToken)}`;
+        setDeepLinkUrl(deepLink);
         setTimeout(() => {
           window.location.href = deepLink;
         }, 1000);
@@ -166,6 +172,15 @@ function GoogleLoginContent() {
           >
             {status}
           </div>
+        )}
+
+        {statusType === "success" && deepLinkUrl && (
+          <a
+            href={deepLinkUrl}
+            className="mt-6 px-6 py-2.5 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-full text-sm transition-all duration-200 shadow-lg shadow-blue-500/20 active:scale-95 inline-block"
+          >
+            Open Wirapath App
+          </a>
         )}
       </div>
     </div>

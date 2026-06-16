@@ -25,8 +25,7 @@ export const JobdeskAnalyzer = () => {
       {/* Left Side: Input */}
       <div className="lg:col-span-5 h-[400px] lg:h-full min-h-0">
         <div
-          className="bg-white rounded-[24px] overflow-hidden flex flex-col h-full transition-all hover:shadow-xl hover:shadow-slate-200/20"
-          style={{ border: "1.2px solid #F1F5F9" }}
+          className="bg-white rounded-[24px] overflow-hidden flex flex-col h-full transition-all hover:shadow-xl hover:shadow-slate-200/20 border border-[#F1F5F9]"
         >
           <div className="px-4 py-3 border-b border-[#F1F5F9] bg-slate-50/50 shrink-0">
             <h3 className="text-[14px] font-semibold text-slate-800 font-poppins text-left">
@@ -66,8 +65,7 @@ export const JobdeskAnalyzer = () => {
       {/* Right Side: Results */}
       <div className="lg:col-span-7 h-fit lg:h-full min-h-0">
         <div
-          className="bg-white rounded-[24px] overflow-hidden flex flex-col h-full shadow-sm shadow-slate-200/5 transition-all hover:shadow-xl hover:shadow-slate-200/20"
-          style={{ border: "1.2px solid #F1F5F9" }}
+          className="bg-white rounded-[24px] overflow-hidden flex flex-col h-full shadow-sm shadow-slate-200/5 transition-all hover:shadow-xl hover:shadow-slate-200/20 border border-[#F1F5F9]"
         >
           <div className="px-4 py-3 border-b border-[#F1F5F9] bg-slate-50/50 shrink-0">
             <h3 className="text-[14px] font-semibold text-slate-800 font-poppins text-left">

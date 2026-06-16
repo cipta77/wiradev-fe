@@ -69,8 +69,7 @@ export const SettingsSidebar = ({
       </div>
 
       <div
-        className="hidden lg:flex w-[280px] bg-white rounded-[24px] overflow-hidden flex-col self-start shrink-0 sticky top-10"
-        style={{ border: "1.2px solid #F1F5F9" }}
+        className="hidden lg:flex w-[280px] bg-white rounded-[24px] overflow-hidden flex-col self-start shrink-0 sticky top-10 border border-[#F1F5F9]"
       >
         <div className="p-3 space-y-1">
           {settingsTabs.map((tab) => {

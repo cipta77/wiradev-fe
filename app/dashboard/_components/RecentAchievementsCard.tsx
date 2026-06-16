@@ -38,8 +38,7 @@ const achievements = [
 export const RecentAchievementsCard = () => {
   return (
     <div
-      className="bg-white rounded-[20px] p-4 md:p-6 h-full flex flex-col gap-4 transition-all shadow-sm shadow-indigo-500/5"
-      style={{ border: "1.2px solid #F1F5F9" }}
+      className="bg-white rounded-[20px] p-4 md:p-6 h-full flex flex-col gap-4 transition-all shadow-sm shadow-indigo-500/5 border border-[#F1F5F9]"
     >
       <div className="flex items-center gap-2.5">
         <div className="w-7 h-7 rounded-full bg-indigo-50 flex items-center justify-center">

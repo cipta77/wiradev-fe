@@ -42,8 +42,7 @@ export default function SettingsPage() {
         <SettingsSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
 
         <div
-          className="flex-1 bg-white rounded-[24px] min-w-0 w-full lg:w-auto transition-all hover:shadow-xl hover:shadow-slate-200/20"
-          style={{ border: "1.2px solid #F1F5F9" }}
+          className="flex-1 bg-white rounded-[24px] min-w-0 w-full lg:w-auto transition-all hover:shadow-xl hover:shadow-slate-200/20 border border-[#F1F5F9]"
         >
           {activeTab === "account" ? (
             <AccountSettings />

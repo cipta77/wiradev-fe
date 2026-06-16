@@ -26,7 +26,6 @@ export const ProjectGrid = () => {
           <div 
             key={i} 
             className="bg-white p-5 rounded-[20px] border border-[#F1F5F9] animate-pulse flex flex-col gap-4.5"
-            style={{ border: '1.2px solid #F1F5F9' }}
           >
             <div className="flex justify-between items-center">
               <div className="flex gap-2">

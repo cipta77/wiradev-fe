@@ -135,43 +135,191 @@
 .dark {
   --surface-1: #0f172a; /* page background */
   --surface-2: #1e293b; /* cards / panels */
-  --surface-3: #334155; /* inputs / subtle fills */
+  --surface-3: #2a3746; /* inputs / subtle fills / hover states */
   --text-strong: #f1f5f9;
   --text-muted: #94a3b8;
   --line: #334155;
 }
 
-.dark .bg-white,
-.dark .bg-\[\#F8FAFC\],
-.dark .bg-\[\#F5F7FA\] {
+/* Base background mapping */
+.dark .bg-white {
   background-color: var(--surface-2) !important;
 }
-.dark .bg-\[\#F8FAFC\] {
+.dark .bg-\[\#F8FAFC\],
+.dark .bg-\[\#F0F2F5\],
+.dark .bg-\[\#F9FAFB\],
+.dark .bg-slate-50\/50,
+.dark .bg-slate-100\/50 {
   background-color: var(--surface-1) !important;
 }
 .dark .bg-slate-50,
 .dark .bg-slate-100,
 .dark .bg-slate-100\/80,
-.dark .bg-blue-50 {
+.dark .bg-blue-50,
+.dark .bg-gray-50,
+.dark .bg-gray-100,
+.dark .bg-neutral-50,
+.dark .bg-neutral-100 {
   background-color: var(--surface-3) !important;
 }
+
+/* Hover background mappings */
+.dark .hover\:bg-slate-50:hover,
+.dark .hover\:bg-slate-100:hover,
+.dark .hover\:bg-slate-200:hover,
+.dark .hover\:bg-gray-50:hover,
+.dark .hover\:bg-gray-100:hover,
+.dark .hover\:bg-gray-200:hover,
+.dark .hover\:bg-blue-50:hover,
+.dark .hover\:bg-blue-50\/20:hover,
+.dark .hover\:bg-emerald-50\/20:hover,
+.dark .hover\:bg-slate-50\/50:hover {
+  background-color: var(--surface-3) !important;
+}
+.dark .hover\:bg-white:hover {
+  background-color: var(--surface-2) !important;
+}
+
+/* Custom search input bg in TopHeader.tsx */
+.dark .bg-\[\#F5F7FA\] {
+  background-color: var(--surface-1) !important;
+}
+
+/* Text color mappings */
 .dark .text-slate-900,
 .dark .text-slate-800,
 .dark .text-slate-750,
-.dark .text-slate-700 {
+.dark .text-slate-700,
+.dark .text-gray-900,
+.dark .text-gray-800,
+.dark .text-gray-700,
+.dark .text-black,
+.dark .text-neutral-900,
+.dark .text-neutral-800,
+.dark .text-neutral-700 {
   color: var(--text-strong) !important;
 }
 .dark .text-slate-600,
 .dark .text-slate-500,
 .dark .text-slate-400,
-.dark .text-slate-300 {
+.dark .text-slate-300,
+.dark .text-gray-600,
+.dark .text-gray-500,
+.dark .text-gray-400,
+.dark .text-gray-300,
+.dark .text-neutral-600,
+.dark .text-neutral-500,
+.dark .text-neutral-400,
+.dark .text-neutral-300 {
   color: var(--text-muted) !important;
 }
+
+/* Hover text mappings */
+.dark .hover\:text-slate-600:hover,
+.dark .hover\:text-slate-700:hover,
+.dark .hover\:text-slate-800:hover,
+.dark .hover\:text-gray-600:hover,
+.dark .hover\:text-gray-700:hover,
+.dark .hover\:text-gray-800:hover,
+.dark .hover\:text-neutral-600:hover,
+.dark .hover\:text-neutral-700:hover,
+.dark .hover\:text-neutral-800:hover,
+.dark .group-hover\:text-slate-600,
+.dark .group-hover\:text-slate-750,
+.dark .group-hover\:text-slate-800 {
+  color: var(--text-strong) !important;
+}
+
+/* Accent colors */
+.dark .text-\[\#0D3E9B\],
+.dark .text-\[\#0d3e9b\] {
+  color: #60a5fa !important;
+}
+.dark .text-orange-700 {
+  color: #fb923c !important;
+}
+
+/* Border mappings */
+.dark .border-slate-50,
 .dark .border-slate-100,
 .dark .border-slate-200,
+.dark .border-gray-50,
+.dark .border-gray-100,
+.dark .border-gray-200,
+.dark .border-neutral-100,
+.dark .border-neutral-200,
+.dark .border-orange-100,
 .dark .border-\[\#F1F5F9\],
-.dark .border-\[\#E8ECF0\] {
+.dark .border-\[\#E8ECF0\],
+.dark .border-\[\#E0EFFF\],
+.dark .border-\[\#E1EFFE\],
+.dark .border-blue-100,
+.dark .border-blue-100\/50 {
   border-color: var(--line) !important;
+}
+
+/* Input, Textarea, Select form overrides */
+.dark input,
+.dark textarea,
+.dark select {
+  color: var(--text-strong) !important;
+  background-color: var(--surface-1) !important;
+  border-color: var(--line) !important;
+}
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: var(--text-muted) !important;
+  opacity: 0.6 !important;
+}
+
+/* Checkbox specific contrast override */
+.dark button[role="checkbox"],
+.dark button[role="checkbox"] span {
+  border-color: var(--text-muted) !important;
+}
+.dark button[role="checkbox"][data-state="checked"] {
+  background-color: #066EFF !important;
+  border-color: #066EFF !important;
+}
+
+/* Pastel/Alert boxes translucent overrides */
+.dark .bg-\[\#F0F7FF\] {
+  background-color: rgba(6, 110, 255, 0.12) !important;
+}
+.dark .bg-\[\#F0FFF9\] {
+  background-color: rgba(16, 185, 129, 0.12) !important;
+}
+.dark .bg-\[\#FFF1F1\] {
+  background-color: rgba(239, 68, 68, 0.12) !important;
+}
+.dark .bg-emerald-50,
+.dark .bg-emerald-50\/50,
+.dark .bg-emerald-50\/10,
+.dark .bg-emerald-500\/5 {
+  background-color: rgba(16, 185, 129, 0.12) !important;
+}
+.dark .bg-amber-50,
+.dark .bg-amber-50\/50,
+.dark .bg-amber-50\/10 {
+  background-color: rgba(245, 158, 11, 0.12) !important;
+}
+.dark .bg-red-50,
+.dark .bg-red-50\/50,
+.dark .bg-rose-50,
+.dark .bg-rose-50\/50 {
+  background-color: rgba(239, 68, 68, 0.12) !important;
+}
+.dark .bg-orange-50 {
+  background-color: rgba(249, 115, 22, 0.12) !important;
+}
+.dark .bg-blue-50,
+.dark .bg-blue-50\/20,
+.dark .bg-blue-50\/50,
+.dark .bg-indigo-50,
+.dark .bg-indigo-50\/50,
+.dark .bg-purple-50,
+.dark .bg-purple-50\/50 {
+  background-color: rgba(6, 110, 255, 0.1) !important;
 }
 
 @layer base {

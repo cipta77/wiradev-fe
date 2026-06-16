@@ -122,8 +122,7 @@ export const TopHeader = ({
 
   return (
     <header
-      className="h-[64px] md:h-[72px] bg-white px-4 md:px-6 flex items-center justify-between shrink-0 z-40 sticky top-0"
-      style={{ borderBottom: "0.8px solid #E8ECF0" }}
+      className="h-[64px] md:h-[72px] bg-white px-4 md:px-6 flex items-center justify-between shrink-0 z-40 sticky top-0 border-b border-[#E8ECF0]"
     >
       <div className="flex items-center gap-3 md:gap-4 flex-1">
         <Sheet>

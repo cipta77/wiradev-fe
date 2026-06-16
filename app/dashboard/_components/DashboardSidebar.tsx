@@ -58,9 +58,9 @@ export const DashboardSidebar = ({
       className={cn(
         "bg-white flex flex-col h-full shrink-0 transition-all duration-300 ease-in-out",
         isCollapsed ? "w-[80px]" : "w-[240px]",
+        !isMobile && "border-r border-[#E8ECF0]",
         className
       )}
-      style={!isMobile ? { borderRight: "0.8px solid #E8ECF0" } : undefined}
     >
       <div className={cn(
         "flex transition-all duration-300", 
