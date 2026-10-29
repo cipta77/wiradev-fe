@@ -15,7 +15,7 @@ function GoogleLoginContent() {
   const initialized = useRef(false);
 
   const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "159334240812-3k5m6m19u2h5uljs0t5rckauajkovgel.apps.googleusercontent.com";
-  const backendUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001";
+  const backendUrl = process.env.NEXT_PUBLIC_API_URL || "";
 
   useEffect(() => {
     if (initialized.current) return;
@@ -64,6 +64,7 @@ function GoogleLoginContent() {
       let res = await fetch(`${backendUrl}/api/auth/google`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ idToken, isSignUp: false }),
       });
 
@@ -75,6 +76,7 @@ function GoogleLoginContent() {
         res = await fetch(`${backendUrl}/api/auth/google`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
+          credentials: "include",
           body: JSON.stringify({ idToken, isSignUp: true }),
         });
         data = await res.json();

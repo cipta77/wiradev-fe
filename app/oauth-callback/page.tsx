@@ -65,7 +65,7 @@ export default function OAuthCallbackPage() {
           if (ghAuth.redirect) {
             // Native mobile (wirapath:// deep link) or Flutter web: exchange the
             // code on the backend and hand the tokens back to the app.
-            const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+            const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "";
             const res = await fetch(`${BASE_URL}/api/auth/github`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
