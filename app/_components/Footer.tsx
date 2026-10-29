@@ -13,9 +13,9 @@ export default function Footer() {
               <Image
                 src="/assets/images/logo.png"
                 alt="WiraDev Logo"
-                width={180}
-                height={28}
-                className="w-auto h-[26px] md:h-[30px] object-contain"
+                width={384}
+                height={106}
+                className="w-auto h-[28px] md:h-[36px] object-contain"
               />
             </Link>
             <p className="text-[13px] text-gray-500 leading-relaxed font-medium">

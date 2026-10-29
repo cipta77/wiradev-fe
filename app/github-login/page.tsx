@@ -30,7 +30,7 @@ function GitHubLoginContent() {
     if (initialized.current) return;
     initialized.current = true;
 
-    const clientId = process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID || "Ov23liHmoz3oN1RfykBi";
+    const clientId = process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID || "Ov23lii4kX9rjRMzqdWN";
     if (!clientId) {
       setIsError(true);
       setStatus("GitHub OAuth is not configured (missing NEXT_PUBLIC_GITHUB_CLIENT_ID).");

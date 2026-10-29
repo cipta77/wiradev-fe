@@ -27,9 +27,9 @@ export default function Navbar() {
             <Image
               src="/assets/images/logo.png"
               alt="WiraDev Logo"
-              width={220}
-              height={32}
-              className="w-auto object-contain h-[24px] md:h-[32px]"
+              width={384}
+              height={106}
+              className="w-auto object-contain h-[28px] md:h-[36px]"
               priority
             />
           </Link>
