@@ -74,6 +74,10 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// Concurrency Mutex & Promise Memoization (/production-code-hardening)
+let activeGitHubAuthPromise: { code: string; promise: Promise<User> } | null = null;
+let activeGoogleAuthPromise: { idToken: string; promise: Promise<User> } | null = null;
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
@@ -149,58 +153,92 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     idToken: string,
     isSignUp: boolean = false,
   ) => {
-    setIsLoading(true);
-    try {
-      const res: {
-        result: {
-          user: User;
-          tokens?: { accessToken: string; refreshToken: string };
-        };
-      } = await apiClient.post(
-        "/api/auth/google",
-        { idToken, isSignUp },
-        { useAuth: false },
-      );
+    if (activeGoogleAuthPromise && activeGoogleAuthPromise.idToken === idToken) {
+      return activeGoogleAuthPromise.promise;
+    }
 
-      const { user: loggedUser, tokens } = res.result;
-      if (tokens) {
-        storeTokens(tokens.accessToken, tokens.refreshToken);
+    const executeAuth = async () => {
+      setIsLoading(true);
+      try {
+        const res: {
+          result: {
+            user: User;
+            tokens?: { accessToken: string; refreshToken: string };
+          };
+        } = await apiClient.post(
+          "/api/auth/google",
+          { idToken, isSignUp },
+          { useAuth: false },
+        );
+
+        const { user: loggedUser, tokens } = res.result;
+        if (tokens) {
+          storeTokens(tokens.accessToken, tokens.refreshToken);
+        }
+        setUser(loggedUser);
+        return loggedUser;
+      } finally {
+        setIsLoading(false);
       }
-      setUser(loggedUser);
-      return loggedUser;
-    } catch (e) {
-      setIsLoading(false);
-      throw e;
+    };
+
+    const promise = executeAuth();
+    activeGoogleAuthPromise = { idToken, promise };
+
+    try {
+      return await promise;
     } finally {
-      setIsLoading(false);
+      setTimeout(() => {
+        if (activeGoogleAuthPromise?.idToken === idToken) {
+          activeGoogleAuthPromise = null;
+        }
+      }, 10000);
     }
   };
 
   const loginWithGitHub = async (code: string, isSignUp: boolean = false) => {
-    setIsLoading(true);
-    try {
-      const res: {
-        result: {
-          user: User;
-          tokens?: { accessToken: string; refreshToken: string };
-        };
-      } = await apiClient.post(
-        "/api/auth/github",
-        { code, isSignUp },
-        { useAuth: false },
-      );
+    // Concurrency Mutex: prevent duplicate requests for the single-use OAuth code
+    if (activeGitHubAuthPromise && activeGitHubAuthPromise.code === code) {
+      return activeGitHubAuthPromise.promise;
+    }
 
-      const { user: loggedUser, tokens } = res.result;
-      if (tokens) {
-        storeTokens(tokens.accessToken, tokens.refreshToken);
+    const executeAuth = async () => {
+      setIsLoading(true);
+      try {
+        const res: {
+          result: {
+            user: User;
+            tokens?: { accessToken: string; refreshToken: string };
+          };
+        } = await apiClient.post(
+          "/api/auth/github",
+          { code, isSignUp },
+          { useAuth: false },
+        );
+
+        const { user: loggedUser, tokens } = res.result;
+        if (tokens) {
+          storeTokens(tokens.accessToken, tokens.refreshToken);
+        }
+        setUser(loggedUser);
+        return loggedUser;
+      } finally {
+        setIsLoading(false);
       }
-      setUser(loggedUser);
-      return loggedUser;
-    } catch (e) {
-      setIsLoading(false);
-      throw e;
+    };
+
+    const promise = executeAuth();
+    activeGitHubAuthPromise = { code, promise };
+
+    try {
+      return await promise;
     } finally {
-      setIsLoading(false);
+      // Retain memoized promise for 10s so concurrent StrictMode/re-renders never resend the used code
+      setTimeout(() => {
+        if (activeGitHubAuthPromise?.code === code) {
+          activeGitHubAuthPromise = null;
+        }
+      }, 10000);
     }
   };
 

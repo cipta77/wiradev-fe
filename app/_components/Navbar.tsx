@@ -26,9 +26,9 @@ export default function Navbar() {
           <Link href="/" className="flex items-center -mt-1 transition-opacity hover:opacity-90">
             <Image
               src="/assets/images/logo.png"
-              alt="Wirapath Logo"
-              width={140}
-              height={36}
+              alt="WiraDev Logo"
+              width={220}
+              height={32}
               className="w-auto object-contain h-[24px] md:h-[32px]"
               priority
             />

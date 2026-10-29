@@ -14,7 +14,7 @@ export default function SignInBranding() {
         <Link href="/" className="mb-12">
           <Image
             src="/assets/images/logo.png"
-            alt="Wirapath Logo"
+            alt="WiraDev Logo"
             width={160}
             height={42}
             className="brightness-0 invert object-contain"

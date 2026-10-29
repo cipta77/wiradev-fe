@@ -69,7 +69,7 @@ export const DashboardSidebar = ({
         <Link href="/dashboard" className={cn("flex items-center", isCollapsed ? "justify-center w-full" : "justify-start")}>
           <Image
             src="/assets/images/logo.png"
-            alt="Wirapath Logo"
+            alt="WiraDev Logo"
             width={isCollapsed ? 28 : 110}
             height={isCollapsed ? 28 : 28}
             className="object-contain"

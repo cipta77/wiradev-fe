@@ -7,6 +7,9 @@ import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
 
+// Module-level deduplication set to prevent re-submitting single-use OAuth codes across React 18/19 StrictMode remounts
+const exchangedCodes = new Set<string>();
+
 export default function OAuthCallbackPage() {
   const router = useRouter();
   const { loginWithGoogle, loginWithGitHub } = useAuth();
@@ -58,6 +61,12 @@ export default function OAuthCallbackPage() {
           router.replace(ghAuth.isSignUp ? "/signup" : "/signin");
           return;
         }
+
+        // Concurrency Guard: Single-use OAuth code must never be sent twice
+        if (exchangedCodes.has(code)) {
+          return;
+        }
+        exchangedCodes.add(code);
 
         try {
           setLoadingText("Authenticating with GitHub...");
@@ -210,7 +219,7 @@ export default function OAuthCallbackPage() {
         <div className="mb-8">
           <Image
             src="/assets/images/logo.png"
-            alt="Wirapath Logo"
+            alt="WiraDev Logo"
             width={180}
             height={46}
             className="brightness-0 invert object-contain"

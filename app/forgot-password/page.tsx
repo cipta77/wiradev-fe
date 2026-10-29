@@ -24,7 +24,7 @@ function ForgotPasswordBranding() {
         <Link href="/" className="mb-12">
           <Image
             src="/assets/images/logo.png"
-            alt="Wirapath Logo"
+            alt="WiraDev Logo"
             width={160}
             height={42}
             className="brightness-0 invert object-contain"
@@ -108,7 +108,7 @@ export default function ForgotPasswordPage() {
                 <div className="lg:hidden mb-4 flex justify-center">
                   <Image
                     src="/assets/images/logo.png"
-                    alt="Wirapath Logo"
+                    alt="WiraDev Logo"
                     width={140}
                     height={36}
                     className="object-contain"

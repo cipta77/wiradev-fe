@@ -71,7 +71,7 @@ export const AuthGuard: React.FC<{ children: React.ReactNode }> = ({
           </div>
           <div className="flex flex-col items-center gap-1.5 mt-2">
             <span className="text-[15px] font-bold text-[#0D3E9B] tracking-wide">
-              Wirapath
+              WiraDev
             </span>
             <span className="text-[12px] font-medium text-slate-400">
               Loading your workspace...

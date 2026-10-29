@@ -29,7 +29,7 @@ export default function OnboardingSidebar({
       <div className="mb-14">
         <Image
           src="/assets/images/logo.png"
-          alt="Wirapath Logo"
+          alt="WiraDev Logo"
           width={130}
           height={32}
           className="object-contain"

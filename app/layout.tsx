@@ -20,7 +20,7 @@ const darkerGrotesque = Darker_Grotesque({
 });
 
 export const metadata: Metadata = {
-  title: "Wirapath - Skill Analysis & Career Prep",
+  title: "WiraDev - Skill Analysis & Career Prep",
   description:
     "Identify and close the gap between your university skills and industry requirements.",
 };

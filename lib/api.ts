@@ -3,12 +3,17 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "";
 async function rawFetch(path: string, options?: RequestInit) {
   const isFormData =
     typeof FormData !== "undefined" && options?.body instanceof FormData;
+  const token =
+    typeof window !== "undefined"
+      ? localStorage.getItem("accessToken") || localStorage.getItem("access_token")
+      : null;
   return fetch(`${API_BASE_URL}${path}`, {
     ...options,
     credentials: "include",
     headers: {
       // Don't force JSON content-type for multipart uploads.
       ...(isFormData ? {} : { "Content-Type": "application/json" }),
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...(options?.headers || {}),
     },
   });

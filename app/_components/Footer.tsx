@@ -12,10 +12,10 @@ export default function Footer() {
             <Link href="/" className="flex items-center -mt-2">
               <Image
                 src="/assets/images/logo.png"
-                alt="Wirapath Logo"
-                width={120}
-                height={32}
-                className="w-auto object-contain"
+                alt="WiraDev Logo"
+                width={180}
+                height={28}
+                className="w-auto h-[26px] md:h-[30px] object-contain"
               />
             </Link>
             <p className="text-[13px] text-gray-500 leading-relaxed font-medium">
@@ -123,7 +123,7 @@ export default function Footer() {
 
         <div className="pt-8 border-t border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-[13px] text-gray-400 font-medium">
-            © 2026 Wirapath. All rights reserved.
+            © 2026 WiraDev. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
             <Link
