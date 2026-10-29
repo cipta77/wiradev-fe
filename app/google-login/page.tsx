@@ -14,7 +14,7 @@ function GoogleLoginContent() {
   const [isLoading, setIsLoading] = useState(false);
   const initialized = useRef(false);
 
-  const clientId = "159334240812-3k5m6m19u2h5uljs0t5rckauajkovgel.apps.googleusercontent.com";
+  const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "159334240812-3k5m6m19u2h5uljs0t5rckauajkovgel.apps.googleusercontent.com";
   const backendUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001";
 
   useEffect(() => {

@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { apiClient } from "./api-client";
+import { apiClient, storeTokens, clearTokens } from "./api-client";
 
 export enum AchievementGoal {
   GET_FIRST_JOB = "GET_FIRST_JOB",
@@ -88,9 +88,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         setUser(res.result);
       } else {
         setUser(null);
+        clearTokens();
       }
-    } catch (e) {
+    } catch {
       setUser(null);
+      clearTokens();
     } finally {
       setIsLoading(false);
     }
@@ -121,6 +123,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       const res: {
         result: {
           user: User;
+          tokens?: { accessToken: string; refreshToken: string };
         };
       } = await apiClient.post(
         "/api/auth/login",
@@ -128,7 +131,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         { useAuth: false },
       );
 
-      const { user: loggedUser } = res.result;
+      const { user: loggedUser, tokens } = res.result;
+      if (tokens) {
+        storeTokens(tokens.accessToken, tokens.refreshToken);
+      }
       setUser(loggedUser);
       return loggedUser;
     } catch (e) {
@@ -148,6 +154,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       const res: {
         result: {
           user: User;
+          tokens?: { accessToken: string; refreshToken: string };
         };
       } = await apiClient.post(
         "/api/auth/google",
@@ -155,7 +162,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         { useAuth: false },
       );
 
-      const { user: loggedUser } = res.result;
+      const { user: loggedUser, tokens } = res.result;
+      if (tokens) {
+        storeTokens(tokens.accessToken, tokens.refreshToken);
+      }
       setUser(loggedUser);
       return loggedUser;
     } catch (e) {
@@ -172,6 +182,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       const res: {
         result: {
           user: User;
+          tokens?: { accessToken: string; refreshToken: string };
         };
       } = await apiClient.post(
         "/api/auth/github",
@@ -179,7 +190,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         { useAuth: false },
       );
 
-      const { user: loggedUser } = res.result;
+      const { user: loggedUser, tokens } = res.result;
+      if (tokens) {
+        storeTokens(tokens.accessToken, tokens.refreshToken);
+      }
       setUser(loggedUser);
       return loggedUser;
     } catch (e) {
@@ -196,6 +210,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       const res: {
         result: {
           user: User;
+          tokens?: { accessToken: string; refreshToken: string };
         };
       } = await apiClient.post(
         "/api/auth/register",
@@ -203,7 +218,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         { useAuth: false },
       );
 
-      const { user: registeredUser } = res.result;
+      const { user: registeredUser, tokens } = res.result;
+      if (tokens) {
+        storeTokens(tokens.accessToken, tokens.refreshToken);
+      }
       setUser(registeredUser);
       return registeredUser;
     } catch (e) {
@@ -220,6 +238,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     } catch (e) {
       console.error("Backend logout failed:", e);
     } finally {
+      clearTokens();
       setUser(null);
       router.push("/signin");
     }
