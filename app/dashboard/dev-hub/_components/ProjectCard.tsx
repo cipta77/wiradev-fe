@@ -40,7 +40,7 @@ export const ProjectCard = ({
 
   return (
     <div 
-      className="bg-white p-5 rounded-[20px] transition-all shadow-sm hover:shadow-md hover:border-[#066EFF]/30 flex flex-col justify-between font-poppins relative overflow-hidden border border-[#F1F5F9]" 
+      className="bg-white border border-[#F1F5F9] p-5 rounded-[20px] transition-all shadow-sm hover:shadow-md hover:border-[#066EFF]/30 flex flex-col justify-between font-poppins relative overflow-hidden"
     >
       {/* Decorative gradient overlay for reviewed projects */}
       {submission_status === "reviewed" && (

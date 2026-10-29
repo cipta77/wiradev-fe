@@ -315,23 +315,6 @@ export async function uploadCvScreening(file: File): Promise<CvScreeningResult> 
   return data?.result ?? data;
 }
 
-export async function analyzeExistingCvScreening(): Promise<CvScreeningResult> {
-  const response = await fetch(`${API_BASE_URL}/api/cv-screening/analyze-existing`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: "include",
-  });
-
-  const data = await response.json().catch(() => null);
-  if (!response.ok) {
-    throw new Error(data?.message || data?.error || "CV screening failed");
-  }
-
-  return data?.result ?? data;
-}
-
 export async function getCvScreeningHistory(): Promise<CvScreeningResult[]> {
   const responseData = await requestApi("/api/cv-screening/history");
   return responseData?.result ?? responseData ?? [];

@@ -135,191 +135,199 @@
 .dark {
   --surface-1: #0f172a; /* page background */
   --surface-2: #1e293b; /* cards / panels */
-  --surface-3: #2a3746; /* inputs / subtle fills / hover states */
+  --surface-3: #334155; /* inputs / subtle fills */
   --text-strong: #f1f5f9;
   --text-muted: #94a3b8;
   --line: #334155;
 }
 
-/* Base background mapping */
-.dark .bg-white {
+/* ── Neutral / page backgrounds ──────────────────────────────────────── */
+.dark .bg-white,
+.dark .bg-\[\#FAFBFC\],
+.dark .bg-\[\#F5F7FA\],
+.dark .bg-\[\#F0F2F5\] {
   background-color: var(--surface-2) !important;
 }
 .dark .bg-\[\#F8FAFC\],
-.dark .bg-\[\#F0F2F5\],
-.dark .bg-\[\#F9FAFB\],
-.dark .bg-slate-50\/50,
-.dark .bg-slate-100\/50 {
+.dark .bg-\[\#F9FAFB\] {
   background-color: var(--surface-1) !important;
 }
 .dark .bg-slate-50,
 .dark .bg-slate-100,
 .dark .bg-slate-100\/80,
+.dark .bg-blue-50 {
+  background-color: var(--surface-3) !important;
+}
+
+/* ── Coloured tint badges / icon containers ───────────────────────────── */
+/* Blue tints — override the generic surface-3 fallback */
 .dark .bg-blue-50,
-.dark .bg-gray-50,
-.dark .bg-gray-100,
-.dark .bg-neutral-50,
-.dark .bg-neutral-100 {
-  background-color: var(--surface-3) !important;
+.dark .bg-\[\#F0F7FF\],
+.dark .bg-\[\#F0F4FF\],
+.dark .bg-\[\#F0F4FF80\] {
+  background-color: rgba(6, 110, 255, 0.15) !important;
 }
-
-/* Hover background mappings */
-.dark .hover\:bg-slate-50:hover,
-.dark .hover\:bg-slate-100:hover,
-.dark .hover\:bg-slate-200:hover,
-.dark .hover\:bg-gray-50:hover,
-.dark .hover\:bg-gray-100:hover,
-.dark .hover\:bg-gray-200:hover,
-.dark .hover\:bg-blue-50:hover,
-.dark .hover\:bg-blue-50\/20:hover,
-.dark .hover\:bg-emerald-50\/20:hover,
-.dark .hover\:bg-slate-50\/50:hover {
-  background-color: var(--surface-3) !important;
+/* Indigo tints */
+.dark .bg-indigo-50 {
+  background-color: rgba(99, 102, 241, 0.15) !important;
 }
-.dark .hover\:bg-white:hover {
-  background-color: var(--surface-2) !important;
+/* Green / emerald tints */
+.dark .bg-green-50,
+.dark .bg-emerald-50,
+.dark .bg-\[\#F0FFF9\],
+.dark .bg-\[\#E6F9F4\],
+.dark .bg-\[\#ECFDF5\] {
+  background-color: rgba(16, 185, 129, 0.15) !important;
 }
-
-/* Custom search input bg in TopHeader.tsx */
-.dark .bg-\[\#F5F7FA\] {
+/* Amber / yellow / orange tints */
+.dark .bg-amber-50,
+.dark .bg-orange-50,
+.dark .bg-\[\#FFFDF0\],
+.dark .bg-\[\#FFF9F0\] {
+  background-color: rgba(245, 158, 11, 0.15) !important;
+}
+/* Red tints */
+.dark .bg-red-50,
+.dark .bg-\[\#FFF1F1\] {
+  background-color: rgba(239, 68, 68, 0.15) !important;
+}
+/* Purple tints */
+.dark .bg-purple-50,
+.dark .bg-\[\#F5F3FF\] {
+  background-color: rgba(168, 85, 247, 0.15) !important;
+}
+/* Neutral page-level section backgrounds (landing page) */
+.dark .bg-\[\#F7F9FC\] {
   background-color: var(--surface-1) !important;
 }
+/* Divider / rule used as background */
+.dark .bg-\[\#E8ECF0\],
+.dark .bg-\[\#F1F5F9\] {
+  background-color: var(--line) !important;
+}
 
-/* Text color mappings */
+/* ── Text ─────────────────────────────────────────────────────────────── */
+/* Near-black labels that vanish on dark surfaces */
+.dark .text-\[\#0A0A1F\],
+.dark .text-\[\#1E293B\],
+.dark .text-\[\#0F172A\] {
+  color: var(--text-strong) !important;
+}
+/* Dark-blue headings → readable light-blue in dark mode */
+.dark .text-\[\#0D3E9B\] {
+  color: #93c5fd !important;
+}
+/* Semi-transparent near-black placeholder text */
+.dark .text-\[\#0A0A0A80\] {
+  color: rgba(148, 163, 184, 0.7) !important;
+}
+/* Slate utility overrides */
 .dark .text-slate-900,
 .dark .text-slate-800,
 .dark .text-slate-750,
-.dark .text-slate-700,
-.dark .text-gray-900,
-.dark .text-gray-800,
-.dark .text-gray-700,
-.dark .text-black,
-.dark .text-neutral-900,
-.dark .text-neutral-800,
-.dark .text-neutral-700 {
+.dark .text-slate-700 {
   color: var(--text-strong) !important;
 }
 .dark .text-slate-600,
 .dark .text-slate-500,
 .dark .text-slate-400,
-.dark .text-slate-300,
-.dark .text-gray-600,
-.dark .text-gray-500,
-.dark .text-gray-400,
-.dark .text-gray-300,
-.dark .text-neutral-600,
-.dark .text-neutral-500,
-.dark .text-neutral-400,
-.dark .text-neutral-300 {
+.dark .text-slate-300 {
   color: var(--text-muted) !important;
 }
 
-/* Hover text mappings */
-.dark .hover\:text-slate-600:hover,
-.dark .hover\:text-slate-700:hover,
-.dark .hover\:text-slate-800:hover,
-.dark .hover\:text-gray-600:hover,
-.dark .hover\:text-gray-700:hover,
-.dark .hover\:text-gray-800:hover,
-.dark .hover\:text-neutral-600:hover,
-.dark .hover\:text-neutral-700:hover,
-.dark .hover\:text-neutral-800:hover,
-.dark .group-hover\:text-slate-600,
-.dark .group-hover\:text-slate-750,
-.dark .group-hover\:text-slate-800 {
-  color: var(--text-strong) !important;
+/* ── Additional badge bg colours ─────────────────────────────────────── */
+.dark .bg-teal-50 {
+  background-color: rgba(20, 184, 166, 0.15) !important;
+}
+.dark .bg-\[\#FDE68A\] {
+  background-color: rgba(245, 158, 11, 0.25) !important;
 }
 
-/* Accent colors */
-.dark .text-\[\#0D3E9B\],
-.dark .text-\[\#0d3e9b\] {
-  color: #60a5fa !important;
-}
-.dark .text-orange-700 {
-  color: #fb923c !important;
-}
-
-/* Border mappings */
+/* ── Borders ──────────────────────────────────────────────────────────── */
 .dark .border-slate-50,
 .dark .border-slate-100,
 .dark .border-slate-200,
 .dark .border-gray-50,
 .dark .border-gray-100,
 .dark .border-gray-200,
-.dark .border-neutral-100,
-.dark .border-neutral-200,
-.dark .border-orange-100,
 .dark .border-\[\#F1F5F9\],
-.dark .border-\[\#E8ECF0\],
-.dark .border-\[\#E0EFFF\],
-.dark .border-\[\#E1EFFE\],
-.dark .border-blue-100,
-.dark .border-blue-100\/50 {
+.dark .border-\[\#E8ECF0\] {
   border-color: var(--line) !important;
 }
+.dark .border-blue-100 {
+  border-color: rgba(6, 110, 255, 0.3) !important;
+}
+.dark .border-teal-100 {
+  border-color: rgba(20, 184, 166, 0.3) !important;
+}
+.dark .border-amber-100,
+.dark .border-\[\#FEF3C7\] {
+  border-color: rgba(245, 158, 11, 0.3) !important;
+}
+.dark .border-red-100 {
+  border-color: rgba(239, 68, 68, 0.3) !important;
+}
+.dark .border-emerald-100 {
+  border-color: rgba(16, 185, 129, 0.3) !important;
+}
 
-/* Input, Textarea, Select form overrides */
-.dark input,
-.dark textarea,
-.dark select {
+/* ── Coloured icon text — lighten saturated brand colours on dark surfaces */
+.dark .text-blue-600 { color: #60a5fa !important; }
+.dark .text-indigo-600 { color: #818cf8 !important; }
+.dark .text-emerald-600 { color: #34d399 !important; }
+.dark .text-teal-600 { color: #2dd4bf !important; }
+.dark .text-purple-600 { color: #c084fc !important; }
+.dark .text-amber-600 { color: #fbbf24 !important; }
+.dark .text-orange-500 { color: #fb923c !important; }
+.dark .text-red-600 { color: #f87171 !important; }
+
+/* ── Gray text (landing page body copy / nav links) ───────────────────── */
+.dark .text-gray-900,
+.dark .text-gray-800,
+.dark .text-gray-700 {
   color: var(--text-strong) !important;
-  background-color: var(--surface-1) !important;
-  border-color: var(--line) !important;
 }
-.dark input::placeholder,
-.dark textarea::placeholder {
+.dark .text-gray-600,
+.dark .text-gray-500,
+.dark .text-gray-400 {
   color: var(--text-muted) !important;
-  opacity: 0.6 !important;
 }
 
-/* Checkbox specific contrast override */
-.dark button[role="checkbox"],
-.dark button[role="checkbox"] span {
-  border-color: var(--text-muted) !important;
+/* ── Semi-opaque white surfaces (frosted-glass navbar, floating cards) ── */
+.dark .bg-white\/80 {
+  background-color: rgba(15, 23, 42, 0.88) !important;
 }
-.dark button[role="checkbox"][data-state="checked"] {
-  background-color: #066EFF !important;
-  border-color: #066EFF !important;
+.dark .bg-white\/90 {
+  background-color: rgba(30, 41, 59, 0.95) !important;
 }
 
-/* Pastel/Alert boxes translucent overrides */
-.dark .bg-\[\#F0F7FF\] {
-  background-color: rgba(6, 110, 255, 0.12) !important;
+/* ── Emerald badge / icon container on hero ──────────────────────────── */
+.dark .bg-emerald-100 {
+  background-color: rgba(16, 185, 129, 0.2) !important;
 }
-.dark .bg-\[\#F0FFF9\] {
-  background-color: rgba(16, 185, 129, 0.12) !important;
+
+/* ── Form input focus — prevent blinding white flash on dark bg ──────── */
+.dark .focus\:bg-white:focus {
+  background-color: var(--surface-3) !important;
 }
-.dark .bg-\[\#FFF1F1\] {
-  background-color: rgba(239, 68, 68, 0.12) !important;
+
+/* ── Opacity-suffixed bg tokens used in dashboard (60%, 50% variants) ── */
+.dark .bg-\[\#F8FAFC\]\/60,
+.dark .bg-\[\#F8FAFC\]\/50 {
+  background-color: rgba(30, 41, 59, 0.6) !important;
 }
-.dark .bg-emerald-50,
-.dark .bg-emerald-50\/50,
-.dark .bg-emerald-50\/10,
-.dark .bg-emerald-500\/5 {
-  background-color: rgba(16, 185, 129, 0.12) !important;
+
+/* ── Input placeholder text ──────────────────────────────────────────── */
+.dark .placeholder\:text-\[\#0A0A0A80\]::placeholder {
+  color: rgba(148, 163, 184, 0.6) !important;
 }
-.dark .bg-amber-50,
-.dark .bg-amber-50\/50,
-.dark .bg-amber-50\/10 {
-  background-color: rgba(245, 158, 11, 0.12) !important;
+
+/* ── Landing-page hero gradient (overrides inline style via wrapper) ──── */
+.hero-gradient {
+  background: linear-gradient(to bottom, #F7F9FC, #F9FAFD, #FBFCFE, #FDFDFE, #FFFFFF);
 }
-.dark .bg-red-50,
-.dark .bg-red-50\/50,
-.dark .bg-rose-50,
-.dark .bg-rose-50\/50 {
-  background-color: rgba(239, 68, 68, 0.12) !important;
-}
-.dark .bg-orange-50 {
-  background-color: rgba(249, 115, 22, 0.12) !important;
-}
-.dark .bg-blue-50,
-.dark .bg-blue-50\/20,
-.dark .bg-blue-50\/50,
-.dark .bg-indigo-50,
-.dark .bg-indigo-50\/50,
-.dark .bg-purple-50,
-.dark .bg-purple-50\/50 {
-  background-color: rgba(6, 110, 255, 0.1) !important;
+.dark .hero-gradient {
+  background: linear-gradient(to bottom, #0f172a, #0f172a) !important;
 }
 
 @layer base {

@@ -47,7 +47,7 @@ export const StatsCards = ({ data }: StatsCardsProps) => {
       {stats.map((stat, index) => (
         <div
           key={index}
-          className="bg-white p-3.5 md:p-4 rounded-[16px] transition-all duration-300 shadow-sm shadow-slate-200/10 border border-[#F1F5F9]"
+          className="bg-white border border-[#F1F5F9] p-3.5 md:p-4 rounded-[16px] transition-all duration-300 shadow-sm shadow-slate-200/10"
         >
           <div
             className={cn(

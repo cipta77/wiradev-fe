@@ -29,8 +29,7 @@ export default function TestimonialsSection() {
   return (
     <section
       id="testimonials"
-      className="min-h-screen py-24 flex flex-col items-center justify-center font-poppins"
-      style={{ backgroundColor: "#F7F9FC" }}
+      className="min-h-screen py-24 flex flex-col items-center justify-center font-poppins bg-[#F7F9FC]"
     >
       <div className="container mx-auto px-4 md:px-6 max-w-[1248px] flex flex-col items-center">
         <div className="flex flex-col items-center text-center space-y-4 mb-14">

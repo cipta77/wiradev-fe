@@ -18,12 +18,10 @@ import {
 import { cn } from "@/lib/utils";
 import { CVAnalysisView } from "./CVAnalysisView";
 import { CVResultsView } from "./CVResultsView";
-import { useAuth } from "@/lib/auth-context";
 import {
   getCvScreeningHistory,
   deleteCvScreening,
   uploadCvScreening,
-  analyzeExistingCvScreening,
   CvScreeningResult,
 } from "@/lib/api";
 
@@ -73,25 +71,6 @@ export const CVScreening = ({ onTabChange }: { onTabChange?: (tab: string) => vo
   const [showResults, setShowResults] = useState(false);
   const [activeResult, setActiveResult] = useState<CvScreeningResult | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
-  const { user } = useAuth();
-
-  const handleAnalyzeExisting = async () => {
-    setIsAnalyzing(true);
-    setUploadError(null);
-    setActiveResult(null);
-
-    try {
-      const result = await analyzeExistingCvScreening();
-      setActiveResult(result);
-      fetchHistory(); // Refresh history background
-    } catch (err) {
-      console.error("Existing CV analysis error:", err);
-      const msg = err instanceof Error ? err.message : "Failed to analyze existing CV. Please try again.";
-      setUploadError(msg);
-      setIsAnalyzing(false);
-    }
-  };
-
   const fetchHistory = async (showLoading = false) => {
     try {
       if (showLoading) {
@@ -256,25 +235,6 @@ export const CVScreening = ({ onTabChange }: { onTabChange?: (tab: string) => vo
                 onChange={handleFileSelect}
               />
             </label>
-
-            {user?.cv_url && (
-              <div className="mt-6 pt-6 border-t border-slate-100 w-full max-w-md flex flex-col items-center animate-in fade-in slide-in-from-bottom-2 duration-300">
-                <div className="flex items-center gap-2 mb-3 text-slate-500">
-                  <FileText className="w-4 h-4 text-[#066EFF]" />
-                  <span className="text-[12px] font-medium truncate max-w-[250px] font-poppins">
-                    {user.cv_url.substring(user.cv_url.lastIndexOf("/") + 1)}
-                  </span>
-                </div>
-                <button
-                  type="button"
-                  onClick={handleAnalyzeExisting}
-                  className="bg-[#066EFF]/10 text-[#066EFF] hover:bg-[#066EFF]/15 px-6 py-2 rounded-full font-semibold text-[12px] transition-all active:scale-[0.98] flex items-center gap-1.5 font-poppins cursor-pointer"
-                >
-                  <Sparkles className="w-3.5 h-3.5" />
-                  Analyze Previously Uploaded CV
-                </button>
-              </div>
-            )}
           </div>
 
           {/* Previous Uploads */}

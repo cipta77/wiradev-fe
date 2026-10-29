@@ -45,7 +45,7 @@ export const IntroView = ({ onStart }: IntroViewProps) => {
         </div>
 
         <div
-          className="bg-[#F0F7FF] p-4 rounded-xl text-left w-full mb-6 border border-[#E0EFFF]"
+          className="bg-[#F0F7FF] border border-blue-100 p-4 rounded-xl text-left w-full mb-6"
         >
           <h4 className="text-[#066EFF] font-bold text-[14px] mb-1.5 font-poppins">
             How this helps your readiness score

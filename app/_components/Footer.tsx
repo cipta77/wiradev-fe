@@ -4,11 +4,7 @@ import Link from "next/link";
 export default function Footer() {
   return (
     <footer
-      className="w-full flex flex-col items-center font-poppins pt-20 pb-12"
-      style={{
-        backgroundColor: "#FAFBFC",
-        borderTop: "0.8px solid #E8ECF0",
-      }}
+      className="w-full flex flex-col items-center font-poppins pt-20 pb-12 bg-[#FAFBFC] border-t border-[#E8ECF0]"
     >
       <div className="container mx-auto px-4 md:px-6 max-w-[1248px]">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-20">

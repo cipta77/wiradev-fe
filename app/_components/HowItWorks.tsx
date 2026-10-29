@@ -43,10 +43,7 @@ export default function HowItWorks() {
   return (
     <section
       id="how-it-works"
-      className="min-h-screen py-24 flex flex-col items-center justify-center font-poppins"
-      style={{
-        background: "linear-gradient(to bottom, #F7F9FC, #F9FAFD, #FBFCFE, #FDFDFE, #FFFFFF)",
-      }}
+      className="hero-gradient min-h-screen py-24 flex flex-col items-center justify-center font-poppins"
     >
       <div className="container mx-auto px-4 md:px-6 max-w-[1248px] flex flex-col items-center">
         <div className="flex flex-col items-center text-center space-y-4 mb-16">

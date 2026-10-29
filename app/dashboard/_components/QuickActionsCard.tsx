@@ -25,7 +25,7 @@ const quickActions = [
 export const QuickActionsCard = () => {
   return (
     <div
-      className="bg-white rounded-[24px] p-5 md:p-8 flex flex-col gap-5 h-full transition-all hover:shadow-xl hover:shadow-blue-500/5 border border-[#F1F5F9]"
+      className="bg-white border border-[#F1F5F9] rounded-[24px] p-5 md:p-8 flex flex-col gap-5 h-full transition-all hover:shadow-xl hover:shadow-blue-500/5"
     >
       <p className="text-[15px] font-medium text-slate-700 tracking-tight">
         Quick Actions

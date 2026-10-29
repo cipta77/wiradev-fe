@@ -6,10 +6,7 @@ import { CheckCircle2, ArrowRight } from "lucide-react";
 export default function HeroSection() {
   return (
     <section
-      className="relative min-h-screen flex items-center pt-24 md:pt-32 pb-16 overflow-hidden"
-      style={{
-        background: "linear-gradient(to bottom, #F7F9FC, #F9FAFD, #FBFCFE, #FDFDFE, #FFFFFF)",
-      }}
+      className="hero-gradient relative min-h-screen flex items-center pt-24 md:pt-32 pb-16 overflow-hidden"
     >
       <div className="container mx-auto px-4 md:px-6 max-w-[1200px]">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center">

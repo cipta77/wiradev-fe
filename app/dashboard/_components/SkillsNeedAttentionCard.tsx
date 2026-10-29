@@ -60,7 +60,7 @@ export const SkillsNeedAttentionCard = () => {
 
   return (
     <div
-      className="bg-white rounded-[20px] p-4 md:p-6 h-full flex flex-col gap-5 transition-all shadow-sm shadow-slate-200/20 border border-[#F1F5F9]"
+      className="bg-white border border-[#F1F5F9] rounded-[20px] p-4 md:p-6 h-full flex flex-col gap-5 transition-all shadow-sm shadow-slate-200/20"
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">

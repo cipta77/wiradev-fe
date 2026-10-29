@@ -43,7 +43,7 @@ export const ContinueWorkingCard = ({ activities = [] }: { activities?: Dashboar
 
   return (
     <div
-      className="bg-white rounded-[20px] p-4 md:p-6 h-full flex flex-col gap-4 transition-all shadow-sm shadow-slate-200/20 border border-[#F1F5F9]"
+      className="bg-white border border-[#F1F5F9] rounded-[20px] p-4 md:p-6 h-full flex flex-col gap-4 transition-all shadow-sm shadow-slate-200/20"
     >
       <div className="flex items-center gap-2.5">
         <div className="w-7 h-7 rounded-full bg-emerald-50 flex items-center justify-center">

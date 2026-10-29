@@ -75,7 +75,6 @@ export default function FeaturesSection() {
             <div
               key={index}
               className="group p-[28px] rounded-[16px] border border-gray-100 bg-white hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-300 flex flex-col items-start text-left"
-              style={{ borderTop: "0.8px solid #E8ECF0" }}
             >
               <div
                 className={`w-12 h-12 rounded-[12px] ${feature.bgColor} flex items-center justify-center mb-5`}
